@@ -30,8 +30,8 @@ logs/
 ################################
 # Backend - Spring Boot (Secrets)
 ################################
-backend/src/main/resources/application*.yml
-backend/src/main/resources/application*.properties
+smart-factory/src/main/resources/application*.yml
+smart-factory/src/main/resources/application*.properties
 
 ################################
 # STS / Eclipse
@@ -43,28 +43,6 @@ backend/src/main/resources/application*.properties
 .settings/
 .springBeans
 .sts4-cache/
-
-################################
-# Crawler
-################################
-crawler/data/**/raw/
-crawler/data/**/incremental_output/
-crawler/data/**/processed/
-crawler/*.lock
-crawler/.venv/
-crawler/venv/
-crawler/__pycache__/
-crawler/**/*.pyc
-
-################################
-# AI - Python / FastAPI
-################################
-ai/__pycache__/
-ai/**/*.pyc
-ai/.venv/
-ai/venv/
-ai/.env
-ai/.env.*
 
 ################################
 # Runtime / DB
