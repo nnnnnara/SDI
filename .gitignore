@@ -1,0 +1,85 @@
+################################
+# OS
+################################
+.DS_Store
+Thumbs.db
+
+################################
+# IDE (Global)
+################################
+.idea/
+.vscode/
+*.iws
+*.iml
+*.ipr
+
+################################
+# Build outputs (Global)
+################################
+.gradle/
+build/
+out/
+bin/
+
+################################
+# Logs
+################################
+*.log
+logs/
+
+################################
+# Backend - Spring Boot (Secrets)
+################################
+backend/src/main/resources/application*.yml
+backend/src/main/resources/application*.properties
+
+################################
+# STS / Eclipse
+################################
+.apt_generated/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+
+################################
+# Crawler
+################################
+crawler/data/**/raw/
+crawler/data/**/incremental_output/
+crawler/data/**/processed/
+crawler/*.lock
+crawler/.venv/
+crawler/venv/
+crawler/__pycache__/
+crawler/**/*.pyc
+
+################################
+# AI - Python / FastAPI
+################################
+ai/__pycache__/
+ai/**/*.pyc
+ai/.venv/
+ai/venv/
+ai/.env
+ai/.env.*
+
+################################
+# Runtime / DB
+################################
+runtime/
+postgres-data/
+
+################################
+# Docker / Environment
+################################
+.env
+.env.*
+*.env
+
+################################
+# Keep Gradle Wrapper
+################################
+!backend/gradle/wrapper/gradle-wrapper.jar
