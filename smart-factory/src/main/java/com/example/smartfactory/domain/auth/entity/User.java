@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import com.example.smartfactory.domain.common.entity.BaseEntity;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(
         name = "users",
@@ -17,6 +16,7 @@ import com.example.smartfactory.domain.common.entity.BaseEntity;
                 @UniqueConstraint(name = "uk_users_employee_no", columnNames = "employee_no")
         }
 )
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
     @Id
@@ -27,29 +27,25 @@ public class User extends BaseEntity {
     @Column(name = "login_id", nullable = false, length = 50)
     private String loginId;
 
-    @Column(name = "password_hash", nullable = false, length = 255)
-    private String passwordHash;
-
-    @Column(name = "name", nullable = false, length = 50)
-    private String name;
+    @Column(name = "password", nullable = false, length = 255)
+    private String password;
 
     @Column(name = "employee_no", nullable = false, length = 20)
     private String employeeNo;
+
+    @Column(name = "name", nullable = false, length = 50)
+    private String name;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 20)
     private UserRole role;
 
     @Builder
-    public User(String loginId, String passwordHash, String name, String employeeNo, UserRole role) {
+    public User(String loginId, String password, String name, String employeeNo, UserRole role) {
         this.loginId = loginId;
-        this.passwordHash = passwordHash;
+        this.password = password;
         this.name = name;
         this.employeeNo = employeeNo;
         this.role = role;
-    }
-
-    public void changePassword(String passwordHash) {
-        this.passwordHash = passwordHash;
     }
 }

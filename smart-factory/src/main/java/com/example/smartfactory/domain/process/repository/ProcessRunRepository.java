@@ -1,7 +1,7 @@
 package com.example.smartfactory.domain.process.repository;
 
 import com.example.smartfactory.domain.process.entity.ProcessRun;
-import com.example.smartfactory.domain.process.entity.ProcessStatus;
+import com.example.smartfactory.domain.process.entity.enums.ProcessStatus;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

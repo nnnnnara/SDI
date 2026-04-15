@@ -1,4 +1,4 @@
-package com.example.smartfactory.domain.process.entity;
+package com.example.smartfactory.domain.process.entity.enums;
 
 public enum CommandStatus {
     REQUESTED,

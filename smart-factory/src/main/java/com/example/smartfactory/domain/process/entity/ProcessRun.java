@@ -2,6 +2,7 @@ package com.example.smartfactory.domain.process.entity;
 
 import com.example.smartfactory.domain.auth.entity.User;
 import com.example.smartfactory.domain.common.entity.BaseEntity;
+import com.example.smartfactory.domain.process.entity.enums.ProcessStatus;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -24,10 +25,6 @@ public class ProcessRun extends BaseEntity {
     @Column(name = "status", nullable = false, length = 20)
     private ProcessStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "started_by", foreignKey = @ForeignKey(name = "fk_process_runs_started_by"))
-    private User startedBy;
-
     @Column(name = "started_at")
     private LocalDateTime startedAt;
 
@@ -36,6 +33,10 @@ public class ProcessRun extends BaseEntity {
 
     @Column(name = "stop_reason", length = 255)
     private String stopReason;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "started_by", foreignKey = @ForeignKey(name = "fk_process_runs_started_by"))
+    private User startedBy;
 
     @Builder
     public ProcessRun(ProcessStatus status, User startedBy, LocalDateTime startedAt) {

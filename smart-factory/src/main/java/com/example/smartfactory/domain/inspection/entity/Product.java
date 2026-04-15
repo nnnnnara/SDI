@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(
         name = "products",
@@ -18,6 +17,7 @@ import lombok.NoArgsConstructor;
                 @UniqueConstraint(name = "uk_products_serial_no", columnNames = "serial_no")
         }
 )
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product extends BaseEntity {
 
     @Id
@@ -25,15 +25,15 @@ public class Product extends BaseEntity {
     @Column(name = "product_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "run_id", nullable = false, foreignKey = @ForeignKey(name = "fk_products_run_id"))
-    private ProcessRun processRun;
-
     @Column(name = "serial_no", nullable = false, length = 100)
     private String serialNo;
 
     @Column(name = "input_at", nullable = false)
     private LocalDateTime inputAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "run_id", nullable = false, foreignKey = @ForeignKey(name = "fk_products_run_id"))
+    private ProcessRun processRun;
 
     @Builder
     public Product(ProcessRun processRun, String serialNo, LocalDateTime inputAt) {

@@ -1,4 +1,4 @@
-package com.example.smartfactory.domain.environment.entity;
+package com.example.smartfactory.domain.log.entity;
 
 import com.example.smartfactory.domain.common.entity.BaseEntity;
 import com.example.smartfactory.domain.process.entity.ProcessRun;
@@ -11,19 +11,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "environment_logs")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EnvironmentLog extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "env_log_id")
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "run_id", nullable = false, foreignKey = @ForeignKey(name = "fk_environment_logs_run_id"))
-    private ProcessRun processRun;
 
     @Column(name = "pm25", precision = 10, scale = 2)
     private BigDecimal pm25;
@@ -39,6 +35,10 @@ public class EnvironmentLog extends BaseEntity {
 
     @Column(name = "measured_at", nullable = false)
     private LocalDateTime measuredAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "run_id", nullable = false, foreignKey = @ForeignKey(name = "fk_environment_logs_run_id"))
+    private ProcessRun processRun;
 
     @Builder
     public EnvironmentLog(

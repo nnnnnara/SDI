@@ -1,6 +1,7 @@
 package com.example.smartfactory.domain.inspection.entity;
 
 import com.example.smartfactory.domain.common.entity.BaseEntity;
+import com.example.smartfactory.domain.inspection.entity.enums.DefectType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -8,19 +9,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "inspection_defects")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class InspectionDefect extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "defect_id")
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "inspection_id", nullable = false, foreignKey = @ForeignKey(name = "fk_inspection_defects_inspection_id"))
-    private Inspection inspection;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "defect_type", nullable = false, length = 20)
@@ -37,6 +34,10 @@ public class InspectionDefect extends BaseEntity {
 
     @Column(name = "bbox_h", nullable = false)
     private Integer bboxH;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "inspection_id", nullable = false, foreignKey = @ForeignKey(name = "fk_inspection_defects_inspection_id"))
+    private Inspection inspection;
 
     @Builder
     public InspectionDefect(

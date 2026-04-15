@@ -3,18 +3,16 @@ package com.example.smartfactory.domain.auth.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "allowed_employee_numbers")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AllowedEmployeeNumber {
 
     @Id
@@ -24,18 +22,10 @@ public class AllowedEmployeeNumber {
     @Column(name = "is_used", nullable = false)
     private boolean isUsed;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
     @Builder
-    public AllowedEmployeeNumber(String allowedEmployeeNo, boolean isUsed) {
+    public AllowedEmployeeNumber(String allowedEmployeeNo) {
         this.allowedEmployeeNo = allowedEmployeeNo;
-        this.isUsed = isUsed;
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
+        this.isUsed = false;
     }
 
     public void markUsed() {
