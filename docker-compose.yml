@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:15.17
+    container_name: smart-factory-postgres
+    environment:
+      POSTGRES_DB: smart_factory
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
