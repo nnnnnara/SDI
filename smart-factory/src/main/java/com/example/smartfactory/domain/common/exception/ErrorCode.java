@@ -29,6 +29,9 @@ public enum ErrorCode {
     // =========================
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, 3000, "존재하지 않는 사용자입니다."),
     DUPLICATE_USER(HttpStatus.CONFLICT, 3001, "이미 존재하는 사용자입니다."),
+    DUPLICATE_LOGIN_ID(HttpStatus.CONFLICT, 3002, "이미 사용 중인 로그인 ID입니다."),
+    INVALID_EMPLOYEE_NO(HttpStatus.BAD_REQUEST, 3003, "유효하지 않은 사번입니다."),
+    ALREADY_USED_EMPLOYEE_NO(HttpStatus.CONFLICT, 3004, "이미 사용된 사번입니다."),
 
     // =========================
     // 9000: SERVER

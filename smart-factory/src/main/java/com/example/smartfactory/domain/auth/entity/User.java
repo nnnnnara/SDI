@@ -48,4 +48,14 @@ public class User extends BaseEntity {
         this.employeeNo = employeeNo;
         this.role = role;
     }
+
+    public static User create(String loginId, String encodedPassword, String name, String employeeNo) {
+        return User.builder()
+                .loginId(loginId)
+                .password(encodedPassword)
+                .name(name)
+                .employeeNo(employeeNo)
+                .role(UserRole.ROLE_USER)
+                .build();
+    }
 }
