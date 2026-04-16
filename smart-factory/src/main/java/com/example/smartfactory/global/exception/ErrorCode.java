@@ -37,7 +37,8 @@ public enum ErrorCode {
     // 4000: PROCESS
     // =========================
     PROCESS_RUN_NOT_FOUND(HttpStatus.NOT_FOUND, 4000, "존재하지 않는 공정 실행입니다."),
-    INVALID_PROCESS_STATUS(HttpStatus.BAD_REQUEST, 4001, "유효하지 않은 공정 상태입니다."),
+    PROCESS_ALREADY_RUNNING(HttpStatus.CONFLICT, 4001, "이미 실행 중인 공정이 있습니다."),
+    INVALID_PROCESS_STATUS(HttpStatus.BAD_REQUEST, 4002, "유효하지 않은 공정 상태입니다."),
 
     // =========================
     // 5000: INSPECTION

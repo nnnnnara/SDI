@@ -1,10 +1,10 @@
 package com.example.smartfactory.mqtt.handler;
 
-import com.example.smartfactory.domain.inspection.dto.InspectionMessage;
+import com.example.smartfactory.domain.inspection.dto.message.InspectionMessage;
 import com.example.smartfactory.domain.inspection.service.InspectionMqttService;
-import com.example.smartfactory.domain.log.dto.EnvironmentMessage;
+import com.example.smartfactory.domain.log.dto.message.EnvironmentMessage;
 import com.example.smartfactory.domain.log.service.EnvironmentMqttService;
-import com.example.smartfactory.domain.process.dto.StatusMessage;
+import com.example.smartfactory.domain.process.dto.message.StatusMessage;
 import com.example.smartfactory.domain.process.service.StatusMqttService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.example.smartfactory.domain.process.service;
 
-import com.example.smartfactory.domain.process.dto.StatusMessage;
+import com.example.smartfactory.domain.process.dto.message.StatusMessage;
 import com.example.smartfactory.domain.process.entity.ProcessRun;
 import com.example.smartfactory.domain.process.repository.ProcessRunRepository;
 import com.example.smartfactory.global.exception.BusinessException;

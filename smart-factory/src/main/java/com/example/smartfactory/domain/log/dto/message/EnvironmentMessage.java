@@ -1,4 +1,4 @@
-package com.example.smartfactory.domain.log.dto;
+package com.example.smartfactory.domain.log.dto.message;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

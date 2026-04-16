@@ -1,4 +1,4 @@
-package com.example.smartfactory.domain.process.dto;
+package com.example.smartfactory.domain.process.dto.message;
 
 import com.example.smartfactory.domain.process.entity.enums.ProcessStatus;
 

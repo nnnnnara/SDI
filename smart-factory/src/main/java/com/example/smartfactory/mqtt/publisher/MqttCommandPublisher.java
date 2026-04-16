@@ -1,6 +1,7 @@
 package com.example.smartfactory.mqtt.publisher;
 
-import com.example.smartfactory.domain.process.dto.CommandMessage;
+import com.example.smartfactory.domain.process.dto.message.CommandMessage;
+import com.example.smartfactory.domain.process.entity.enums.CommandType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -18,25 +19,25 @@ public class MqttCommandPublisher {
     private final ObjectMapper objectMapper;
 
     public void publishStart() {
-        publish(new CommandMessage("START", LocalDateTime.now()));
+        publish(new CommandMessage(CommandType.START, LocalDateTime.now()));
     }
 
     public void publishStop() {
-        publish(new CommandMessage("STOP", LocalDateTime.now()));
+        publish(new CommandMessage(CommandType.STOP, LocalDateTime.now()));
     }
 
-    public void publish(CommandMessage commandMessage) {
+    private void publish(CommandMessage commandMessage) {
         try {
-            String jsonPayload = objectMapper.writeValueAsString(commandMessage);
+            String payload = objectMapper.writeValueAsString(commandMessage);
 
             mqttOutboundChannel.send(
-                    MessageBuilder.withPayload(jsonPayload)
+                    MessageBuilder.withPayload(payload)
                             .setHeader("mqtt_topic", "factory/command")
                             .setHeader("mqtt_qos", 1)
                             .build()
             );
         } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("MQTT 명령 메시지 JSON 변환에 실패했습니다.", e);
+            throw new IllegalArgumentException("MQTT 명령 발행 실패", e);
         }
     }
 }

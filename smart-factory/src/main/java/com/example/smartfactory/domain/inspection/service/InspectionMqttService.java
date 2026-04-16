@@ -1,7 +1,7 @@
 package com.example.smartfactory.domain.inspection.service;
 
-import com.example.smartfactory.domain.inspection.dto.DefectMessage;
-import com.example.smartfactory.domain.inspection.dto.InspectionMessage;
+import com.example.smartfactory.domain.inspection.dto.message.DefectMessage;
+import com.example.smartfactory.domain.inspection.dto.message.InspectionMessage;
 import com.example.smartfactory.domain.inspection.entity.Inspection;
 import com.example.smartfactory.domain.inspection.entity.InspectionDefect;
 import com.example.smartfactory.domain.inspection.entity.Product;

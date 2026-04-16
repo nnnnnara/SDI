@@ -45,14 +45,22 @@ public class ProcessRun extends BaseEntity {
         this.startedAt = startedAt;
     }
 
+    public static ProcessRun start(User startedBy) {
+        return ProcessRun.builder()
+                .status(ProcessStatus.RUNNING)
+                .startedBy(startedBy)
+                .startedAt(LocalDateTime.now())
+                .build();
+    }
+
     public void updateStatus(ProcessStatus status) {
         this.status = status;
     }
 
-    public void stop(String stopReason, LocalDateTime endedAt) {
+    public void stop(String stopReason) {
         this.status = ProcessStatus.STOPPED;
         this.stopReason = stopReason;
-        this.endedAt = endedAt;
+        this.endedAt = LocalDateTime.now();
     }
 
     public void markError() {

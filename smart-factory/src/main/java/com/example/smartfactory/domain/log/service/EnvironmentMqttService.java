@@ -1,6 +1,6 @@
 package com.example.smartfactory.domain.log.service;
 
-import com.example.smartfactory.domain.log.dto.EnvironmentMessage;
+import com.example.smartfactory.domain.log.dto.message.EnvironmentMessage;
 import com.example.smartfactory.domain.log.entity.EnvironmentLog;
 import com.example.smartfactory.domain.log.repository.EnvironmentLogRepository;
 import com.example.smartfactory.domain.process.entity.ProcessRun;

@@ -1,4 +1,4 @@
-package com.example.smartfactory.domain.inspection.dto;
+package com.example.smartfactory.domain.inspection.dto.message;
 
 import com.example.smartfactory.domain.inspection.entity.enums.DefectType;
 
