@@ -34,6 +34,25 @@ public enum ErrorCode {
     ALREADY_USED_EMPLOYEE_NO(HttpStatus.CONFLICT, 3004, "이미 사용된 사번입니다."),
 
     // =========================
+    // 4000: PROCESS
+    // =========================
+    PROCESS_RUN_NOT_FOUND(HttpStatus.NOT_FOUND, 4000, "존재하지 않는 공정 실행입니다."),
+    INVALID_PROCESS_STATUS(HttpStatus.BAD_REQUEST, 4001, "유효하지 않은 공정 상태입니다."),
+
+    // =========================
+    // 5000: INSPECTION
+    // =========================
+    INSPECTION_NOT_FOUND(HttpStatus.NOT_FOUND, 5000, "존재하지 않는 검사 정보입니다."),
+    PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, 5001, "존재하지 않는 제품입니다."),
+    INVALID_INSPECTION_RESULT(HttpStatus.BAD_REQUEST, 5002, "유효하지 않은 검사 결과입니다."),
+
+    // =========================
+    // 6000: LOG
+    // =========================
+    ENVIRONMENT_LOG_NOT_FOUND(HttpStatus.NOT_FOUND, 6000, "환경 로그를 찾을 수 없습니다."),
+    SYSTEM_LOG_NOT_FOUND(HttpStatus.NOT_FOUND, 6001, "시스템 로그를 찾을 수 없습니다."),
+
+    // =========================
     // 9000: SERVER
     // =========================
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 9000, "서버 오류가 발생했습니다.");

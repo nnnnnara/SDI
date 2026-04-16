@@ -63,4 +63,18 @@ public class Inspection extends BaseEntity {
         this.resultImageUrl = resultImageUrl;
         this.inspectedAt = inspectedAt;
     }
+
+    public static Inspection create(
+            Product product,
+            InspectionResult result,
+            BigDecimal confidence,
+            LocalDateTime inspectedAt
+    ) {
+        return Inspection.builder()
+                .product(product)
+                .result(result)
+                .confidence(confidence)
+                .inspectedAt(inspectedAt)
+                .build();
+    }
 }

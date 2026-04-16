@@ -1,9 +1,8 @@
 package com.example.smartfactory.domain.process.dto;
 
-import java.time.LocalDateTime;
+import com.example.smartfactory.domain.process.entity.enums.ProcessStatus;
 
 public record StatusMessage(
         Long runId,
-        String status,
-        LocalDateTime updatedAt
+        ProcessStatus status
 ) {}

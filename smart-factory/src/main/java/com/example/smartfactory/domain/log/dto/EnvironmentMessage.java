@@ -1,12 +1,13 @@
 package com.example.smartfactory.domain.log.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record EnvironmentMessage(
         Long runId,
-        Double pm25,
-        Double pm10,
-        Double temperature,
-        Double humidity,
+        BigDecimal pm25,
+        BigDecimal pm10,
+        BigDecimal temperature,
+        BigDecimal humidity,
         LocalDateTime measuredAt
 ) {}

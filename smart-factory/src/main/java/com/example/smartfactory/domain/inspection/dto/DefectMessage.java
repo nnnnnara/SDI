@@ -1,7 +1,9 @@
 package com.example.smartfactory.domain.inspection.dto;
 
+import com.example.smartfactory.domain.inspection.entity.enums.DefectType;
+
 public record DefectMessage(
-        String defectType,
+        DefectType defectType,
         Integer bboxX,
         Integer bboxY,
         Integer bboxW,
