@@ -3,6 +3,7 @@ package com.example.smartfactory.domain.process.controller;
 import com.example.smartfactory.domain.process.dto.response.ProcessRunResponse;
 import com.example.smartfactory.domain.process.dto.request.StopProcessRequest;
 import com.example.smartfactory.domain.process.service.ProcessCommandService;
+import com.example.smartfactory.domain.process.service.ProcessQueryService;
 import com.example.smartfactory.global.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/process")
 public class ProcessController {
 
+    private final ProcessQueryService processQueryService;
     private final ProcessCommandService processCommandService;
 
     @PostMapping("/start")
@@ -27,5 +29,15 @@ public class ProcessController {
             @RequestBody @Valid StopProcessRequest request
     ) {
         return ApiResponse.ok(processCommandService.stop(runId, request));
+    }
+
+    @GetMapping("/current")
+    public ApiResponse<ProcessRunResponse> getCurrentRun() {
+        return ApiResponse.ok(processQueryService.getCurrentRun());
+    }
+
+    @GetMapping("/{runId}")
+    public ApiResponse<ProcessRunResponse> getRun(@PathVariable Long runId) {
+        return ApiResponse.ok(processQueryService.getRun(runId));
     }
 }
