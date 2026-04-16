@@ -1,6 +1,6 @@
-package com.example.smartfactory.domain.common.exception;
+package com.example.smartfactory.global.exception;
 
-import com.example.smartfactory.domain.common.response.ApiResponse;
+import com.example.smartfactory.global.response.ApiResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import java.util.LinkedHashMap;

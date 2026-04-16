@@ -1,6 +1,6 @@
 package com.example.smartfactory.domain.inspection.entity;
 
-import com.example.smartfactory.domain.common.entity.BaseEntity;
+import com.example.smartfactory.global.entity.BaseEntity;
 import com.example.smartfactory.domain.process.entity.ProcessRun;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

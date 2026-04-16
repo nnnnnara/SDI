@@ -1,4 +1,4 @@
-package com.example.smartfactory.domain.common.mqtt;
+package com.example.smartfactory.mqtt.publisher;
 
 import com.example.smartfactory.domain.process.dto.CommandMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;

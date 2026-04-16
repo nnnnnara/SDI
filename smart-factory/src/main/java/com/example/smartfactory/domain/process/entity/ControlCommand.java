@@ -1,7 +1,7 @@
 package com.example.smartfactory.domain.process.entity;
 
 import com.example.smartfactory.domain.auth.entity.User;
-import com.example.smartfactory.domain.common.entity.BaseEntity;
+import com.example.smartfactory.global.entity.BaseEntity;
 import com.example.smartfactory.domain.process.entity.enums.CommandStatus;
 import com.example.smartfactory.domain.process.entity.enums.CommandType;
 import jakarta.persistence.*;

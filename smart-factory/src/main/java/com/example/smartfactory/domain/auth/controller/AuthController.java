@@ -6,7 +6,7 @@ import com.example.smartfactory.domain.auth.dto.request.SignupRequest;
 import com.example.smartfactory.domain.auth.dto.response.SignupResponse;
 import com.example.smartfactory.domain.auth.dto.response.TokenResponse;
 import com.example.smartfactory.domain.auth.service.AuthService;
-import com.example.smartfactory.domain.common.response.ApiResponse;
+import com.example.smartfactory.global.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;

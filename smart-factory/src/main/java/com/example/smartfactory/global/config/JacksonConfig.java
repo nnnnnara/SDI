@@ -1,4 +1,4 @@
-package com.example.smartfactory.domain.common.config;
+package com.example.smartfactory.global.config;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;

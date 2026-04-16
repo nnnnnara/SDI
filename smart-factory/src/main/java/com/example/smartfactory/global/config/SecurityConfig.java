@@ -1,9 +1,9 @@
-package com.example.smartfactory.domain.common.config;
+package com.example.smartfactory.global.config;
 
-import com.example.smartfactory.domain.common.security.handler.CustomAccessDeniedHandler;
-import com.example.smartfactory.domain.common.security.handler.CustomAuthenticationEntryPoint;
-import com.example.smartfactory.domain.common.security.jwt.JwtAuthenticationFilter;
-import com.example.smartfactory.domain.common.security.jwt.JwtProperties;
+import com.example.smartfactory.global.security.handler.CustomAccessDeniedHandler;
+import com.example.smartfactory.global.security.handler.CustomAuthenticationEntryPoint;
+import com.example.smartfactory.global.security.jwt.JwtAuthenticationFilter;
+import com.example.smartfactory.global.security.jwt.JwtProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

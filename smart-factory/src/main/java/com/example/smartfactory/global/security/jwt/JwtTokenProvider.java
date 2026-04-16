@@ -1,4 +1,4 @@
-package com.example.smartfactory.domain.common.security.jwt;
+package com.example.smartfactory.global.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;

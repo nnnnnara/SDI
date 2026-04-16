@@ -1,4 +1,4 @@
-package com.example.smartfactory.domain.common.exception;
+package com.example.smartfactory.global.exception;
 
 import lombok.Getter;
 

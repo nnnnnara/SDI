@@ -1,7 +1,7 @@
-package com.example.smartfactory.domain.common.security.handler;
+package com.example.smartfactory.global.security.handler;
 
-import com.example.smartfactory.domain.common.exception.ErrorCode;
-import com.example.smartfactory.domain.common.response.ApiResponse;
+import com.example.smartfactory.global.exception.ErrorCode;
+import com.example.smartfactory.global.response.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

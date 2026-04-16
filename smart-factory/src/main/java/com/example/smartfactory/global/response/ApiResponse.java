@@ -1,7 +1,7 @@
-package com.example.smartfactory.domain.common.response;
+package com.example.smartfactory.global.response;
 
 
-import com.example.smartfactory.domain.common.exception.ErrorCode;
+import com.example.smartfactory.global.exception.ErrorCode;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

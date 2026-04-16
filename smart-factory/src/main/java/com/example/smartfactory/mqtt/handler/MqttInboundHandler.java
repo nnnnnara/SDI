@@ -1,4 +1,4 @@
-package com.example.smartfactory.domain.common.mqtt;
+package com.example.smartfactory.mqtt.handler;
 
 import com.example.smartfactory.domain.inspection.dto.InspectionMessage;
 import com.example.smartfactory.domain.log.dto.EnvironmentMessage;

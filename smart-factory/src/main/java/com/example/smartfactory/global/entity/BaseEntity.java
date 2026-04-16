@@ -1,4 +1,4 @@
-package com.example.smartfactory.domain.common.entity;
+package com.example.smartfactory.global.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
