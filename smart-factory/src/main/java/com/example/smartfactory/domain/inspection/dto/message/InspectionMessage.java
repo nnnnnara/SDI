@@ -11,6 +11,8 @@ public record InspectionMessage(
         String serialNo,
         InspectionResult result,
         BigDecimal confidence,
+        String rawImageUrl,
+        String resultImageUrl,
         List<DefectMessage> defects,
         LocalDateTime inspectedAt
 ) {}

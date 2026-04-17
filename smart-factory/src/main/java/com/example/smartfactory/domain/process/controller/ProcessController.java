@@ -1,5 +1,7 @@
 package com.example.smartfactory.domain.process.controller;
 
+import com.example.smartfactory.domain.inspection.dto.response.InspectionResponse;
+import com.example.smartfactory.domain.log.dto.response.EnvironmentLogResponse;
 import com.example.smartfactory.domain.process.dto.response.ProcessRunResponse;
 import com.example.smartfactory.domain.process.dto.request.StopProcessRequest;
 import com.example.smartfactory.domain.process.service.ProcessCommandService;
@@ -9,6 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,5 +43,15 @@ public class ProcessController {
     @GetMapping("/{runId}")
     public ApiResponse<ProcessRunResponse> getRun(@PathVariable Long runId) {
         return ApiResponse.ok(processQueryService.getRun(runId));
+    }
+
+    @GetMapping("/{runId}/environment")
+    public ApiResponse<List<EnvironmentLogResponse>> getEnvironmentLogs(@PathVariable Long runId) {
+        return ApiResponse.ok(processQueryService.getEnvironmentLogs(runId));
+    }
+
+    @GetMapping("/{runId}/inspections")
+    public ApiResponse<List<InspectionResponse>> getInspections(@PathVariable Long runId) {
+        return ApiResponse.ok(processQueryService.getInspections(runId));
     }
 }
