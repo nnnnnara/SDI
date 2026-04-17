@@ -11,6 +11,8 @@ import com.example.smartfactory.domain.process.repository.ProcessRunRepository;
 import com.example.smartfactory.global.exception.BusinessException;
 import com.example.smartfactory.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,11 @@ public class ProcessQueryService {
     private final ProcessRunRepository processRunRepository;
     private final InspectionRepository inspectionRepository;
     private final EnvironmentLogRepository environmentLogRepository;
+
+    public Page<ProcessRunResponse> getRuns(Pageable pageable) {
+        return processRunRepository.findAllWithStartedBy(pageable)
+                .map(ProcessRunResponse::from);
+    }
 
     public ProcessRunResponse getCurrentRun() {
         ProcessRun processRun = processRunRepository
