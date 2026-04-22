@@ -51,6 +51,12 @@ runtime/
 postgres-data/
 
 ################################
+# Mosquitto
+################################
+mosquitto/data/
+mosquitto/log/
+
+################################
 # Docker / Environment
 ################################
 .env

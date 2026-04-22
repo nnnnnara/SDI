@@ -12,5 +12,26 @@ services:
       - postgres-data:/var/lib/postgresql/data
     restart: unless-stopped
 
+  mqtt:
+    image: eclipse-mosquitto:2.0
+    container_name: smart-factory-mqtt
+    restart: unless-stopped
+    ports:
+      - "1884:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+
+  mqtt-ui:
+    image: emqx/mqttx-web
+    container_name: smart-factory-mqtt-ui
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    depends_on:
+      - mqtt
+
 volumes:
   postgres-data:
