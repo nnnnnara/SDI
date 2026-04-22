@@ -26,7 +26,6 @@ public class SystemLog extends BaseEntity {
     @Column(name = "source", nullable = false, length = 50)
     private String source;
 
-    @Lob
     @Column(name = "message", nullable = false)
     private String message;
 

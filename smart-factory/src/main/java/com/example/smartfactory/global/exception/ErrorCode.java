@@ -13,6 +13,7 @@ public enum ErrorCode {
     // =========================
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, 1000, "잘못된 요청입니다."),
     VALIDATION_ERROR(HttpStatus.BAD_REQUEST, 1001, "입력값이 올바르지 않습니다."),
+    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, 1002, "유효하지 않은 입력값입니다."),
 
     // =========================
     // 2000: AUTH
