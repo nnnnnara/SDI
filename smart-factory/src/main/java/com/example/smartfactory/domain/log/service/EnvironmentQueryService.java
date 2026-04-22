@@ -1,0 +1,50 @@
+package com.example.smartfactory.domain.log.service;
+
+import com.example.smartfactory.domain.log.dto.response.EnvironmentLogResponse;
+import com.example.smartfactory.domain.log.entity.EnvironmentLog;
+import com.example.smartfactory.domain.log.repository.EnvironmentLogRepository;
+import com.example.smartfactory.domain.process.entity.ProcessRun;
+import com.example.smartfactory.domain.process.entity.enums.ProcessStatus;
+import com.example.smartfactory.domain.process.repository.ProcessRunRepository;
+import com.example.smartfactory.global.exception.BusinessException;
+import com.example.smartfactory.global.exception.ErrorCode;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class EnvironmentQueryService {
+
+    private final EnvironmentLogRepository environmentLogRepository;
+    private final ProcessRunRepository processRunRepository;
+
+    public EnvironmentLogResponse getLatestEnvironment() {
+        ProcessRun currentRun = processRunRepository
+                .findFirstByStatusOrderByStartedAtDesc(ProcessStatus.RUNNING)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PROCESS_RUN_NOT_FOUND));
+
+        EnvironmentLog environmentLog = environmentLogRepository
+                .findFirstByProcessRun_IdOrderByMeasuredAtDesc(currentRun.getId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.ENVIRONMENT_LOG_NOT_FOUND));
+
+        return EnvironmentLogResponse.from(environmentLog);
+    }
+
+    public List<EnvironmentLogResponse> getEnvironmentLogs(LocalDateTime start, LocalDateTime end) {
+        if (start.isAfter(end)) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        List<EnvironmentLog> logs = environmentLogRepository
+                .findAllByMeasuredAtBetweenOrderByMeasuredAtAsc(start, end);
+
+        return logs.stream()
+                .map(EnvironmentLogResponse::from)
+                .toList();
+    }
+}
