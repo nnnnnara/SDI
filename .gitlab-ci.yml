@@ -63,15 +63,6 @@ deploy:
     - echo "GRAFANA_PASSWORD=$GRAFANA_PASSWORD" >> .env
     - echo "JWT_SECRET=$JWT_SECRET" >> .env
 
-    # 경로 확인
-    - pwd
-    - ls -al
-    - ls -al smart-factory
-    - find . -maxdepth 3 -name "settings.gradle" -o -name "build.gradle" -o -name "gradlew"
-
-    # Spring Boot 빌드
-    - docker run --rm -v "$PWD/smart-factory:/app" -w /app gradle:8.7-jdk17 gradle clean build -x test
-
     # 배포
     - docker compose -f docker-compose.prod.yml down
     - docker compose -f docker-compose.prod.yml up -d --build
