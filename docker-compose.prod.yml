@@ -19,6 +19,12 @@ services:
       - "1883:1883"
       - "9001:9001"
 
+  frontend:
+    build:
+      context: ./frontend
+    container_name: smart-factory-frontend
+    restart: unless-stopped
+
   backend:
     build:
       context: ./smart-factory
@@ -54,7 +60,8 @@ services:
     depends_on:
       - backend
       - grafana
-    restart: unless-stopped
+      - frontend
+  restart: unless-stopped
 
 volumes:
   postgres-data:
