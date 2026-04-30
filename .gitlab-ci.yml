@@ -1,4 +1,4 @@
-image: gradle:8.7-jdk17
+image: docker:27
 
 stages:
   - deploy
@@ -12,13 +12,8 @@ deploy:
     DOCKER_HOST: unix:///var/run/docker.sock
     DOCKER_TLS_CERTDIR: ""
 
-  before_script:
-    - apt-get update
-    - apt-get install -y docker.io python3-pip
-    - pip3 install docker-compose
-
   script:
-    # application.yml 생성
+    # 1. application.yml 생성
     - mkdir -p smart-factory/src/main/resources
     - |
       cat > smart-factory/src/main/resources/application.yml <<EOF
@@ -51,18 +46,21 @@ deploy:
         broker-url: tcp://mqtt:1883
       EOF
 
-    # env 파일 생성
+    # 2. .env 생성
     - echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" > .env
     - echo "GRAFANA_PASSWORD=$GRAFANA_PASSWORD" >> .env
     - echo "JWT_SECRET=$JWT_SECRET" >> .env
 
-    # build
-    - cd smart-factory
-    - chmod +x gradlew
-    - ./gradlew clean build -x test
-    - cd ..
+    # 3. Gradle build (컨테이너로 실행)
+    - docker run --rm \
+        -v $PWD/smart-factory:/app \
+        -w /app \
+        gradle:8.7-jdk17 \
+        ./gradlew clean build -x test
 
-    # deploy
-    - docker-compose -f docker-compose.prod.yml down
-    - docker-compose -f docker-compose.prod.yml up -d --build
+    # 4. deploy
+    - docker compose -f docker-compose.prod.yml down
+    - docker compose -f docker-compose.prod.yml up -d --build
+
+    # 5. 확인
     - docker ps
