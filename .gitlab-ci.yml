@@ -2,6 +2,7 @@ stages:
   - deploy
 
 deploy:
+  image: docker:27
   stage: deploy
   only:
     - develop
@@ -56,7 +57,5 @@ deploy:
     - echo "JWT_SECRET=$JWT_SECRET" >> .env
 
     - docker compose -f docker-compose.prod.yml down
-
     - docker compose -f docker-compose.prod.yml up -d --build
-
     - docker ps
