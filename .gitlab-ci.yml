@@ -1,8 +1,9 @@
+image: gradle:8.7-jdk17
+
 stages:
   - deploy
 
 deploy:
-  image: docker:27
   stage: deploy
   only:
     - develop
@@ -12,6 +13,7 @@ deploy:
     DOCKER_TLS_CERTDIR: ""
 
   script:
+    # application.yml 생성
     - mkdir -p smart-factory/src/main/resources
     - |
       cat > smart-factory/src/main/resources/application.yml <<EOF
@@ -39,33 +41,23 @@ deploy:
 
       jwt:
         secret: ${JWT_SECRET}
-        access-token-ttl: PT30M
-        header: Authorization
-        prefix: "Bearer "
 
       mqtt:
         broker-url: tcp://mqtt:1883
-        client-id: smart-factory-server
-        username:
-        password:
-        qos: 1
-        topics:
-          environment: factory/environment
-          inspection: factory/inspection
-          status: factory/status
-          command: factory/command
       EOF
 
+    # env 파일 생성
     - echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" > .env
     - echo "GRAFANA_PASSWORD=$GRAFANA_PASSWORD" >> .env
     - echo "JWT_SECRET=$JWT_SECRET" >> .env
 
+    # build
     - cd smart-factory
     - chmod +x gradlew
     - ./gradlew clean build -x test
     - cd ..
 
-    - docker version
+    # deploy
     - docker compose -f docker-compose.prod.yml down
     - docker compose -f docker-compose.prod.yml up -d --build
     - docker ps
