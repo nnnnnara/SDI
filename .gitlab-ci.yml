@@ -60,6 +60,11 @@ deploy:
     - echo "GRAFANA_PASSWORD=$GRAFANA_PASSWORD" >> .env
     - echo "JWT_SECRET=$JWT_SECRET" >> .env
 
+    - cd smart-factory
+    - chmod +x gradlew
+    - ./gradlew clean build -x test
+    - cd ..
+
     - docker version
     - docker compose -f docker-compose.prod.yml down
     - docker compose -f docker-compose.prod.yml up -d --build
