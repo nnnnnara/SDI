@@ -52,7 +52,7 @@ deploy:
     - echo "JWT_SECRET=$JWT_SECRET" >> .env
 
     # 3. Gradle build
-    - docker run --rm -v "$PWD/smart-factory:/app" -w /app gradle:8.7-jdk17 ./gradlew clean build -x test
+    - docker run --rm -v "$PWD/smart-factory:/app" -w /app gradle:8.7-jdk17 gradle clean build -x test
 
     # 4. deploy
     - docker compose -f docker-compose.prod.yml down
