@@ -14,7 +14,8 @@ deploy:
 
   before_script:
     - apt-get update
-    - apt-get install -y docker.io docker-compose-plugin
+    - apt-get install -y docker.io python3-pip
+    - pip3 install docker-compose
 
   script:
     # application.yml 생성
@@ -62,6 +63,6 @@ deploy:
     - cd ..
 
     # deploy
-    - docker compose -f docker-compose.prod.yml down
-    - docker compose -f docker-compose.prod.yml up -d --build
+    - docker-compose -f docker-compose.prod.yml down
+    - docker-compose -f docker-compose.prod.yml up -d --build
     - docker ps
