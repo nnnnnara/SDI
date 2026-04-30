@@ -51,12 +51,8 @@ deploy:
     - echo "GRAFANA_PASSWORD=$GRAFANA_PASSWORD" >> .env
     - echo "JWT_SECRET=$JWT_SECRET" >> .env
 
-    # 3. Gradle build (컨테이너로 실행)
-    - docker run --rm \
-        -v $PWD/smart-factory:/app \
-        -w /app \
-        gradle:8.7-jdk17 \
-        ./gradlew clean build -x test
+    # 3. Gradle build
+    - docker run --rm -v "$PWD/smart-factory:/app" -w /app gradle:8.7-jdk17 ./gradlew clean build -x test
 
     # 4. deploy
     - docker compose -f docker-compose.prod.yml down
