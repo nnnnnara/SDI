@@ -13,7 +13,7 @@ deploy:
     DOCKER_TLS_CERTDIR: ""
 
   script:
-    # 1. application.yml 생성
+    # application.yml 생성
     - mkdir -p smart-factory/src/main/resources
     - |
       cat > smart-factory/src/main/resources/application.yml <<EOF
@@ -41,22 +41,40 @@ deploy:
 
       jwt:
         secret: ${JWT_SECRET}
+        access-token-ttl: PT30M
+        header: Authorization
+        prefix: "Bearer "
 
       mqtt:
         broker-url: tcp://mqtt:1883
+        client-id: smart-factory-server
+        username:
+        password:
+        qos: 1
+        topics:
+          environment: factory/environment
+          inspection: factory/inspection
+          status: factory/status
+          command: factory/command
       EOF
 
-    # 2. .env 생성
+    # docker-compose용 .env 생성
     - echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" > .env
     - echo "GRAFANA_PASSWORD=$GRAFANA_PASSWORD" >> .env
     - echo "JWT_SECRET=$JWT_SECRET" >> .env
 
-    # 3. Gradle build
+    # 경로 확인
+    - pwd
+    - ls -al
+    - ls -al smart-factory
+    - find . -maxdepth 3 -name "settings.gradle" -o -name "build.gradle" -o -name "gradlew"
+
+    # Spring Boot 빌드
     - docker run --rm -v "$PWD/smart-factory:/app" -w /app gradle:8.7-jdk17 gradle clean build -x test
 
-    # 4. deploy
+    # 배포
     - docker compose -f docker-compose.prod.yml down
     - docker compose -f docker-compose.prod.yml up -d --build
 
-    # 5. 확인
+    # 확인
     - docker ps
