@@ -11,16 +11,13 @@ services:
     restart: unless-stopped
 
   mqtt:
-    image: eclipse-mosquitto:2.0
+    build:
+      context: ./mosquitto
     container_name: smart-factory-mqtt
     restart: unless-stopped
     ports:
       - "1883:1883"
       - "9001:9001"
-    volumes:
-      - ./mosquitto/config:/mosquitto/config
-      - ./mosquitto/data:/mosquitto/data
-      - ./mosquitto/log:/mosquitto/log
 
   backend:
     build:
