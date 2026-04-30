@@ -1,0 +1,62 @@
+stages:
+  - deploy
+
+deploy:
+  stage: deploy
+  only:
+    - develop
+
+  script:
+    - mkdir -p smart-factory/src/main/resources
+    - |
+      cat > smart-factory/src/main/resources/application.yml <<EOF
+      spring:
+        datasource:
+          driver-class-name: org.postgresql.Driver
+          url: jdbc:postgresql://postgres:5432/smart_factory
+          username: postgres
+          password: ${POSTGRES_PASSWORD}
+
+        jpa:
+          open-in-view: false
+          hibernate:
+            ddl-auto: update
+          properties:
+            hibernate:
+              jdbc:
+                time_zone: Asia/Seoul
+          show-sql: false
+
+        jackson:
+          time-zone: Asia/Seoul
+          mapper:
+            accept-case-insensitive-enums: true
+
+      jwt:
+        secret: ${JWT_SECRET}
+        access-token-ttl: PT30M
+        header: Authorization
+        prefix: "Bearer "
+
+      mqtt:
+        broker-url: tcp://mqtt:1883
+        client-id: smart-factory-server
+        username:
+        password:
+        qos: 1
+        topics:
+          environment: factory/environment
+          inspection: factory/inspection
+          status: factory/status
+          command: factory/command
+      EOF
+
+    - echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" > .env
+    - echo "GRAFANA_PASSWORD=$GRAFANA_PASSWORD" >> .env
+    - echo "JWT_SECRET=$JWT_SECRET" >> .env
+
+    - docker compose -f docker-compose.prod.yml down
+
+    - docker compose -f docker-compose.prod.yml up -d --build
+
+    - docker ps
