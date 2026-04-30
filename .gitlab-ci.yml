@@ -12,6 +12,10 @@ deploy:
     DOCKER_HOST: unix:///var/run/docker.sock
     DOCKER_TLS_CERTDIR: ""
 
+  before_script:
+    - apt-get update
+    - apt-get install -y docker.io docker-compose-plugin
+
   script:
     # application.yml 생성
     - mkdir -p smart-factory/src/main/resources
