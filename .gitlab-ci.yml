@@ -7,6 +7,10 @@ deploy:
   only:
     - develop
 
+  variables:
+    DOCKER_HOST: unix:///var/run/docker.sock
+    DOCKER_TLS_CERTDIR: ""
+
   script:
     - mkdir -p smart-factory/src/main/resources
     - |
@@ -56,6 +60,7 @@ deploy:
     - echo "GRAFANA_PASSWORD=$GRAFANA_PASSWORD" >> .env
     - echo "JWT_SECRET=$JWT_SECRET" >> .env
 
+    - docker version
     - docker compose -f docker-compose.prod.yml down
     - docker compose -f docker-compose.prod.yml up -d --build
     - docker ps
