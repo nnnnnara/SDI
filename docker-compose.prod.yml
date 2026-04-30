@@ -61,7 +61,7 @@ services:
       - backend
       - grafana
       - frontend
-  restart: unless-stopped
+    restart: unless-stopped
 
 volumes:
   postgres-data:
