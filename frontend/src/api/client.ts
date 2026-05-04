@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-// Use environment variable for the base URL. If not set, fallback to empty string (relative path)
+// In production nginx exposes the backend under /api and strips that prefix.
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '',
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
