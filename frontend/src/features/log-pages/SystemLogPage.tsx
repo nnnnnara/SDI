@@ -30,12 +30,12 @@ export function SystemLogPage() {
     <div className="p-6 space-y-6 max-w-[1400px] mx-auto w-full">
       <div>
         <h1 className="text-2xl font-bold text-brand-textMain">시스템 로그</h1>
-        <p className="mt-1 text-sm text-brand-textSub">총 {total.toLocaleString()}개의 시스템 로그</p>
+        <p className="mt-1 text-sm text-brand-textSub">총 {total.toLocaleString()}건의 설비 이벤트와 경고 내역을 확인합니다.</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle><Terminal className="w-5 h-5 text-brand-warning" /> 로그 목록</CardTitle>
+          <CardTitle><Terminal className="w-5 h-5 text-brand-warning" /> 로그 내역</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {logs.map((log) => (

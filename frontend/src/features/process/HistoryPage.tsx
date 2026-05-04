@@ -24,7 +24,7 @@ export function HistoryPage() {
     <div className="p-6 space-y-6 max-w-[1400px] mx-auto w-full">
       <div>
         <h1 className="text-2xl font-bold text-brand-textMain">공정 이력</h1>
-        <p className="mt-1 text-sm text-brand-textSub">총 {total.toLocaleString()}개의 공정 실행 기록</p>
+        <p className="mt-1 text-sm text-brand-textSub">총 {total.toLocaleString()}건의 공정 실행 기록을 확인합니다.</p>
       </div>
 
       <Card>

@@ -30,7 +30,7 @@ export function EnvironmentLogPage() {
     <div className="p-6 space-y-6 max-w-[1400px] mx-auto w-full">
       <div>
         <h1 className="text-2xl font-bold text-brand-textMain">환경 로그</h1>
-        <p className="mt-1 text-sm text-brand-textSub">최근 24시간의 온도, 습도, 미세먼지 데이터를 조회합니다.</p>
+        <p className="mt-1 text-sm text-brand-textSub">최근 24시간의 온도, 습도, 미세먼지 변화를 추적합니다.</p>
       </div>
 
       <Card>
@@ -56,7 +56,7 @@ export function EnvironmentLogPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>측정 목록</CardTitle>
+          <CardTitle>측정 내역</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <table className="w-full text-sm">
@@ -75,8 +75,8 @@ export function EnvironmentLogPage() {
                   <td className="px-5 py-3 text-brand-textSub">{formatDateTime(log.measuredAt)}</td>
                   <td className="px-5 py-3 text-brand-textMain">{formatNumber(log.temperature)}°C</td>
                   <td className="px-5 py-3 text-brand-textMain">{formatNumber(log.humidity)}%</td>
-                  <td className="px-5 py-3 text-brand-textMain">{formatNumber(log.pm25)}㎍</td>
-                  <td className="px-5 py-3 text-brand-textMain">{formatNumber(log.pm10)}㎍</td>
+                  <td className="px-5 py-3 text-brand-textMain">{formatNumber(log.pm25)}㎍/㎥</td>
+                  <td className="px-5 py-3 text-brand-textMain">{formatNumber(log.pm10)}㎍/㎥</td>
                 </tr>
               ))}
             </tbody>

@@ -20,12 +20,12 @@ export function InspectionPage() {
     <div className="p-6 space-y-6 max-w-[1400px] mx-auto w-full">
       <div>
         <h1 className="text-2xl font-bold text-brand-textMain">검사 결과</h1>
-        <p className="mt-1 text-sm text-brand-textSub">최근 검사 결과와 결함 위치 정보를 확인합니다.</p>
+        <p className="mt-1 text-sm text-brand-textSub">최근 제품 검사 결과와 결함 정보를 확인합니다.</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle><ClipboardCheck className="w-5 h-5 text-brand-success" /> 최근 검사</CardTitle>
+          <CardTitle><ClipboardCheck className="w-5 h-5 text-brand-success" /> 제품 검사 목록</CardTitle>
           <span className="text-xs text-brand-textSub">{inspections.length.toLocaleString()}건</span>
         </CardHeader>
         <CardContent className="p-0">
@@ -35,9 +35,9 @@ export function InspectionPage() {
                 <tr>
                   <th className="px-5 py-3 font-medium">검사 ID</th>
                   <th className="px-5 py-3 font-medium">S/N</th>
-                  <th className="px-5 py-3 font-medium">결과</th>
+                  <th className="px-5 py-3 font-medium">판정</th>
                   <th className="px-5 py-3 font-medium">신뢰도</th>
-                  <th className="px-5 py-3 font-medium">결함</th>
+                  <th className="px-5 py-3 font-medium">결함 정보</th>
                   <th className="px-5 py-3 font-medium">검사 시간</th>
                   <th className="px-5 py-3 font-medium">이미지</th>
                 </tr>

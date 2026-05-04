@@ -78,7 +78,7 @@ export function DashboardPage() {
     <div className="p-6 space-y-6 max-w-[1600px] mx-auto w-full">
       <div>
         <h1 className="text-2xl font-bold text-brand-textMain">대시보드</h1>
-        <p className="mt-1 text-sm text-brand-textSub">현재 설비 상태와 주요 지표만 요약합니다.</p>
+        <p className="mt-1 text-sm text-brand-textSub">공정 상태, 검사 결과, 환경 지표와 주요 알림을 한눈에 확인합니다.</p>
       </div>
 
       <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -92,7 +92,7 @@ export function DashboardPage() {
               </Badge>
             </span>
           }
-          helper={processStatus?.runId ? `RUN-${processStatus.runId}` : '진행 중인 공정 없음'}
+          helper={processStatus?.runId ? `RUN-${processStatus.runId}` : '진행 중인 공정이 없습니다'}
           icon={<Activity className="w-6 h-6" />}
         />
         <DashboardMetric
@@ -102,13 +102,13 @@ export function DashboardPage() {
           icon={<ClipboardCheck className="w-6 h-6" />}
         />
         <DashboardMetric
-          label="최신 환경"
+          label="환경 상태"
           value={environmentData ? `${formatNumber(environmentData.temperature)}°C` : '-'}
-          helper={environmentData ? `습도 ${formatNumber(environmentData.humidity)}%` : '측정값 없음'}
+          helper={environmentData ? `습도 ${formatNumber(environmentData.humidity)}%` : '측정 데이터가 없습니다'}
           icon={<Gauge className="w-6 h-6" />}
         />
         <DashboardMetric
-          label="위험 알림"
+          label="주요 알림"
           value={`${dangerAlerts.toLocaleString()}건`}
           helper={`최근 로그 ${alerts.length.toLocaleString()}건 기준`}
           icon={<AlertTriangle className="w-6 h-6" />}
@@ -118,15 +118,15 @@ export function DashboardPage() {
       <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle><ClipboardCheck className="w-5 h-5 text-brand-success" /> 최근 검사 요약</CardTitle>
+            <CardTitle><ClipboardCheck className="w-5 h-5 text-brand-success" /> 최근 검사 결과</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <table className="w-full text-sm">
               <thead className="bg-brand-background/50 text-left text-xs uppercase text-brand-textSub">
                 <tr>
                   <th className="px-5 py-3 font-medium">S/N</th>
-                  <th className="px-5 py-3 font-medium">결과</th>
-                  <th className="px-5 py-3 font-medium">시간</th>
+                  <th className="px-5 py-3 font-medium">판정</th>
+                  <th className="px-5 py-3 font-medium">검사 시간</th>
                 </tr>
               </thead>
               <tbody>
@@ -141,7 +141,7 @@ export function DashboardPage() {
                 )) : (
                   <tr>
                     <td className="px-5 py-8 text-center text-brand-textSub" colSpan={3}>
-                      최근 검사 데이터가 없습니다.
+                      표시할 검사 결과가 없습니다.
                     </td>
                   </tr>
                 )}
@@ -152,11 +152,11 @@ export function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle><Camera className="w-5 h-5 text-brand-info" /> 카메라 스트림</CardTitle>
+            <CardTitle><Camera className="w-5 h-5 text-brand-info" /> 카메라 영상</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="rounded-lg border border-brand-border bg-brand-background p-5 text-sm text-brand-textSub">
-              실시간 영상은 사이드바의 카메라 메뉴에서 확인합니다.
+              실시간 현장 영상은 카메라 영상 메뉴에서 확인할 수 있습니다.
             </div>
           </CardContent>
         </Card>

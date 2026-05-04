@@ -100,7 +100,7 @@ export function ProcessPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-brand-textMain">공정 제어</h1>
-          <p className="mt-1 text-sm text-brand-textSub">백엔드 `/process`와 `/commands` API로 공정을 제어하고 명령 이력을 확인합니다.</p>
+          <p className="mt-1 text-sm text-brand-textSub">현재 설비 가동 상태를 확인하고 공정 시작과 중지를 제어합니다.</p>
         </div>
         <button
           onClick={() => fetchData(true)}
@@ -168,7 +168,7 @@ export function ProcessPage() {
                 <tr>
                   <th className="px-5 py-3 font-medium">명령 ID</th>
                   <th className="px-5 py-3 font-medium">Run ID</th>
-                  <th className="px-5 py-3 font-medium">유형</th>
+                  <th className="px-5 py-3 font-medium">명령</th>
                   <th className="px-5 py-3 font-medium">상태</th>
                   <th className="px-5 py-3 font-medium">요청 시간</th>
                 </tr>
