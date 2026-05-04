@@ -133,7 +133,7 @@ export function ProcessPage() {
               </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-brand-textSub">담당자</dt>
-                <dd className="text-brand-textMain">{currentRun?.startedBy?.username ?? '-'}</dd>
+                <dd className="text-brand-textMain">{currentRun?.startedBy?.name ?? '-'}</dd>
               </div>
             </dl>
 

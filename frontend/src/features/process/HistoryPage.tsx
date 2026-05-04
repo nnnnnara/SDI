@@ -51,7 +51,7 @@ export function HistoryPage() {
                   <td className="px-5 py-3 text-brand-textSub">{formatDateTime(run.startedAt)}</td>
                   <td className="px-5 py-3 text-brand-textSub">{formatDateTime(run.endedAt)}</td>
                   <td className="px-5 py-3 text-brand-textSub">{run.stopReason ?? '-'}</td>
-                  <td className="px-5 py-3 text-brand-textMain">{run.startedBy?.username ?? '-'}</td>
+                  <td className="px-5 py-3 text-brand-textMain">{run.startedBy?.name ?? '-'}</td>
                 </tr>
               ))}
             </tbody>

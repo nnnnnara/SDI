@@ -34,8 +34,7 @@ apiClient.interceptors.response.use(
 // Centralized type definitions corresponding to backend DTOs
 export interface UserSummaryResponse {
   userId: number;
-  username: string;
-  role: string;
+  name: string;
 }
 
 export interface ProcessRunResponse {
