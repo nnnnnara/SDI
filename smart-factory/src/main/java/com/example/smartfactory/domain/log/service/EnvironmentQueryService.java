@@ -26,13 +26,17 @@ public class EnvironmentQueryService {
     public EnvironmentLogResponse getLatestEnvironment() {
         ProcessRun currentRun = processRunRepository
                 .findFirstByStatusOrderByStartedAtDesc(ProcessStatus.RUNNING)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PROCESS_RUN_NOT_FOUND));
+                .orElse(null);
+
+        if (currentRun == null) {
+            return null;
+        }
 
         EnvironmentLog environmentLog = environmentLogRepository
                 .findFirstByProcessRun_IdOrderByMeasuredAtDesc(currentRun.getId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.ENVIRONMENT_LOG_NOT_FOUND));
+                .orElse(null);
 
-        return EnvironmentLogResponse.from(environmentLog);
+        return environmentLog != null ? EnvironmentLogResponse.from(environmentLog) : null;
     }
 
     public List<EnvironmentLogResponse> getEnvironmentLogs(LocalDateTime start, LocalDateTime end) {

@@ -7,9 +7,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,9 +24,18 @@ public class ControlCommandController {
 
     @GetMapping
     public ApiResponse<Page<ControlCommandResponse>> getCommands(
+            @AuthenticationPrincipal Long userId,
             @PageableDefault(size = 10, sort = "issuedAt", direction = Sort.Direction.DESC)
             org.springframework.data.domain.Pageable pageable
     ) {
-        return ApiResponse.ok(controlCommandQueryService.getCommands(pageable));
+        return ApiResponse.ok(controlCommandQueryService.getCommands(userId, pageable));
+    }
+
+    @GetMapping("/recent")
+    public ApiResponse<List<ControlCommandResponse>> getRecentCommands(
+            @AuthenticationPrincipal Long userId,
+            @RequestParam(defaultValue = "8") int limit
+    ) {
+        return ApiResponse.ok(controlCommandQueryService.getRecentCommands(userId, limit));
     }
 }

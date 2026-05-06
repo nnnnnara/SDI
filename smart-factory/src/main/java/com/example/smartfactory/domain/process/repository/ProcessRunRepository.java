@@ -14,5 +14,10 @@ public interface ProcessRunRepository extends JpaRepository<ProcessRun, Long> {
     @EntityGraph(attributePaths = "startedBy")
     Page<ProcessRun> findAllWithStartedBy(Pageable pageable);
 
+    @EntityGraph(attributePaths = "startedBy")
+    Page<ProcessRun> findAllByStartedBy_Id(Long userId, Pageable pageable);
+
+    Optional<ProcessRun> findByIdAndStartedBy_Id(Long runId, Long userId);
+
     Optional<ProcessRun> findFirstByStatusOrderByStartedAtDesc(ProcessStatus status);
 }

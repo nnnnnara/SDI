@@ -10,4 +10,7 @@ public interface ControlCommandRepository extends JpaRepository<ControlCommand, 
 
     @EntityGraph(attributePaths = {"user", "processRun"})
     Page<ControlCommand> findAllByOrderByIssuedAtDesc(Pageable pageable);
+
+    @EntityGraph(attributePaths = {"user", "processRun"})
+    Page<ControlCommand> findAllByUser_IdOrderByIssuedAtDesc(Long userId, Pageable pageable);
 }

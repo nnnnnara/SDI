@@ -33,18 +33,20 @@ public class ProcessController {
 
     @PostMapping("/{runId}/stop")
     public ApiResponse<ProcessRunResponse> stop(
+            @AuthenticationPrincipal Long userId,
             @PathVariable Long runId,
             @RequestBody @Valid StopProcessRequest request
     ) {
-        return ApiResponse.ok(processCommandService.stop(runId, request));
+        return ApiResponse.ok(processCommandService.stop(userId, runId, request));
     }
 
     @GetMapping
     public ApiResponse<Page<ProcessRunResponse>> getRuns(
+            @AuthenticationPrincipal Long userId,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-        return ApiResponse.ok(processQueryService.getRuns(pageable));
+        return ApiResponse.ok(processQueryService.getRuns(userId, pageable));
     }
 
     @GetMapping("/current")
@@ -53,17 +55,26 @@ public class ProcessController {
     }
 
     @GetMapping("/{runId}")
-    public ApiResponse<ProcessRunResponse> getRun(@PathVariable Long runId) {
-        return ApiResponse.ok(processQueryService.getRun(runId));
+    public ApiResponse<ProcessRunResponse> getRun(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long runId
+    ) {
+        return ApiResponse.ok(processQueryService.getRun(userId, runId));
     }
 
     @GetMapping("/{runId}/environment")
-    public ApiResponse<List<EnvironmentLogResponse>> getEnvironmentLogs(@PathVariable Long runId) {
-        return ApiResponse.ok(processQueryService.getEnvironmentLogs(runId));
+    public ApiResponse<List<EnvironmentLogResponse>> getEnvironmentLogs(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long runId
+    ) {
+        return ApiResponse.ok(processQueryService.getEnvironmentLogs(userId, runId));
     }
 
     @GetMapping("/{runId}/inspections")
-    public ApiResponse<List<InspectionResponse>> getInspections(@PathVariable Long runId) {
-        return ApiResponse.ok(processQueryService.getInspections(runId));
+    public ApiResponse<List<InspectionResponse>> getInspections(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long runId
+    ) {
+        return ApiResponse.ok(processQueryService.getInspections(userId, runId));
     }
 }
