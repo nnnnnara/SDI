@@ -18,7 +18,7 @@ const MENU_ITEMS = [
   { id: 'inspection', path: '/inspection', label: '검사 결과', icon: ClipboardList },
   { id: 'env-log', path: '/env-log', label: '환경 로그', icon: FileText },
   { id: 'sys-log', path: '/sys-log', label: '시스템 로그', icon: Terminal },
-  { id: 'camera', path: '/camera', label: '카메라 영상', icon: Camera },
+  { id: 'camera', path: '/camera', label: '카메라 모니터링', icon: Camera },
 ];
 
 export function Sidebar() {
@@ -28,9 +28,7 @@ export function Sidebar() {
     <aside className="w-64 bg-brand-card border-r border-brand-border h-screen flex flex-col shrink-0">
       <div className="h-16 flex items-center px-6 border-b border-brand-border">
         <img src={logoUrl} alt="SDI Logo" className="w-8 h-8 mr-3 object-contain rounded" />
-        <h1 className="text-xl font-bold text-brand-textMain tracking-wide">
-          SDI
-        </h1>
+        <h1 className="text-xl font-bold text-brand-textMain tracking-wide">SDI</h1>
       </div>
 
       <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto">

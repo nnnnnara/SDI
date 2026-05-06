@@ -5,7 +5,9 @@ import { ProtectedRoute } from './components/layout/ProtectedRoute';
 import { DashboardPage } from './features/dashboard/DashboardPage';
 import { ProcessPage } from './features/process/ProcessPage';
 import { HistoryPage } from './features/process/HistoryPage';
+import { ProcessDetailPage } from './features/process/ProcessDetailPage';
 import { InspectionPage } from './features/inspection/InspectionPage';
+import { InspectionDetailPage } from './features/inspection/InspectionDetailPage';
 import { EnvironmentLogPage } from './features/log-pages/EnvironmentLogPage';
 import { SystemLogPage } from './features/log-pages/SystemLogPage';
 import { CameraPage } from './features/camera/CameraPage';
@@ -21,7 +23,9 @@ function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/process" element={<ProcessPage />} />
         <Route path="/history" element={<HistoryPage />} />
+        <Route path="/history/:runId" element={<ProcessDetailPage />} />
         <Route path="/inspection" element={<InspectionPage />} />
+        <Route path="/inspection/:inspectionId" element={<InspectionDetailPage />} />
         <Route path="/env-log" element={<EnvironmentLogPage />} />
         <Route path="/sys-log" element={<SystemLogPage />} />
         <Route path="/camera" element={<CameraPage />} />

@@ -77,7 +77,7 @@ export interface InspectionDefectResponse {
 export interface InspectionResponse {
   inspectionId: number;
   serialNo: string;
-  result: 'PASS' | 'FAIL';
+  result: 'GOOD' | 'BAD';
   confidence: number;
   rawImageUrl: string;
   resultImageUrl: string;
@@ -87,7 +87,7 @@ export interface InspectionResponse {
 
 export interface SystemLogResponse {
   logId: number;
-  level: 'INFO' | 'WARNING' | 'ERROR' | 'DANGER';
+  level: 'INFO' | 'WARN' | 'ERROR';
   source: string;
   message: string;
   runId?: number;
