@@ -62,12 +62,25 @@ services:
     container_name: smart-factory-nginx
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - certbot-www:/var/www/certbot
+      - certbot-etc:/etc/letsencrypt
     depends_on:
       - backend
       - grafana
       - frontend
     restart: unless-stopped
 
+  certbot:
+    image: certbot/certbot
+    container_name: smart-factory-certbot
+    volumes:
+      - certbot-www:/var/www/certbot
+      - certbot-etc:/etc/letsencrypt
+
 volumes:
   postgres-data:
   grafana_data:
+  certbot-www:
+  certbot-etc:
