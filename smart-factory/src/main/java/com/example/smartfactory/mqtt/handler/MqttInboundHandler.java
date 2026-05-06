@@ -4,6 +4,7 @@ import com.example.smartfactory.domain.inspection.dto.message.InspectionMessage;
 import com.example.smartfactory.domain.inspection.service.InspectionMqttService;
 import com.example.smartfactory.domain.log.dto.message.EnvironmentMessage;
 import com.example.smartfactory.domain.log.service.EnvironmentMqttService;
+import com.example.smartfactory.domain.log.service.SystemLogCommandService;
 import com.example.smartfactory.domain.process.dto.message.StatusMessage;
 import com.example.smartfactory.domain.process.service.StatusMqttService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +23,7 @@ public class MqttInboundHandler {
     private final EnvironmentMqttService environmentMqttService;
     private final InspectionMqttService inspectionMqttService;
     private final StatusMqttService statusMqttService;
+    private final SystemLogCommandService systemLogCommandService;
 
     @ServiceActivator(inputChannel = "mqttInputChannel")
     public void handle(Message<?> message) {
@@ -42,10 +44,22 @@ public class MqttInboundHandler {
                     StatusMessage dto = objectMapper.readValue(payload, StatusMessage.class);
                     statusMqttService.handle(dto);
                 }
-                default -> log.warn("처리되지 않은 토픽입니다. topic={}, payload={}", topic, payload);
+                default -> {
+                    log.warn("Unhandled MQTT topic. topic={}, payload={}", topic, payload);
+                    systemLogCommandService.warn(
+                            "MQTT",
+                            "Unhandled MQTT topic received: topic=%s".formatted(topic),
+                            null
+                    );
+                }
             }
         } catch (Exception e) {
-            log.error("MQTT 메시지 처리 중 오류가 발생했습니다. topic={}, payload={}", topic, payload, e);
+            log.error("Failed to process MQTT message. topic={}, payload={}", topic, payload, e);
+            systemLogCommandService.error(
+                    "MQTT",
+                    "Failed to process MQTT message: topic=%s, reason=%s".formatted(topic, e.getMessage()),
+                    null
+            );
         }
     }
 }

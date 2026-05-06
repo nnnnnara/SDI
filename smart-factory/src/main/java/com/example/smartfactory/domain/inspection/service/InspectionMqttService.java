@@ -5,9 +5,11 @@ import com.example.smartfactory.domain.inspection.dto.message.InspectionMessage;
 import com.example.smartfactory.domain.inspection.entity.Inspection;
 import com.example.smartfactory.domain.inspection.entity.InspectionDefect;
 import com.example.smartfactory.domain.inspection.entity.Product;
+import com.example.smartfactory.domain.inspection.entity.enums.InspectionResult;
 import com.example.smartfactory.domain.inspection.repository.InspectionDefectRepository;
 import com.example.smartfactory.domain.inspection.repository.InspectionRepository;
 import com.example.smartfactory.domain.inspection.repository.ProductRepository;
+import com.example.smartfactory.domain.log.service.SystemLogCommandService;
 import com.example.smartfactory.domain.process.entity.ProcessRun;
 import com.example.smartfactory.domain.process.repository.ProcessRunRepository;
 import com.example.smartfactory.global.exception.BusinessException;
@@ -29,6 +31,7 @@ public class InspectionMqttService {
     private final InspectionDefectRepository inspectionDefectRepository;
     private final ProductRepository productRepository;
     private final ProcessRunRepository processRunRepository;
+    private final SystemLogCommandService systemLogCommandService;
 
     @Transactional
     public void handle(InspectionMessage message) {
@@ -74,7 +77,15 @@ public class InspectionMqttService {
             inspectionDefectRepository.saveAll(defects);
         }
 
-        log.info("검사 결과 저장 완료. runId={}, serialNo={}, defectCount={}",
+        if (message.result() == InspectionResult.BAD) {
+            systemLogCommandService.warn(
+                    "INSPECTION",
+                    "Bad inspection result: serialNo=%s, defectCount=%d".formatted(message.serialNo(), defects.size()),
+                    message.runId()
+            );
+        }
+
+        log.info("Inspection result saved. runId={}, serialNo={}, defectCount={}",
                 message.runId(), message.serialNo(), defects.size());
     }
 }
