@@ -38,16 +38,20 @@ public class InspectionMqttService {
         Product product = productRepository.findBySerialNo(message.serialNo())
                 .orElseGet(() -> productRepository.save(
                         Product.builder()
+                                .processRun(processRun)
                                 .serialNo(message.serialNo())
+                                .inputAt(message.inspectedAt())
                                 .build()
                 ));
 
-        Inspection inspection = Inspection.create(
-                product,
-                message.result(),
-                message.confidence(),
-                message.inspectedAt()
-        );
+        Inspection inspection = Inspection.builder()
+                .product(product)
+                .result(message.result())
+                .confidence(message.confidence())
+                .rawImageUrl(message.rawImageUrl())
+                .resultImageUrl(message.resultImageUrl())
+                .inspectedAt(message.inspectedAt())
+                .build();
 
         Inspection savedInspection = inspectionRepository.save(inspection);
 
