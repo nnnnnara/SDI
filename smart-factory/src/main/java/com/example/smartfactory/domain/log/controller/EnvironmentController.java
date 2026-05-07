@@ -5,6 +5,7 @@ import com.example.smartfactory.domain.log.service.EnvironmentQueryService;
 import com.example.smartfactory.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -18,12 +19,13 @@ public class EnvironmentController {
     private final EnvironmentQueryService environmentQueryService;
 
     @GetMapping("/latest")
-    public ApiResponse<EnvironmentLogResponse> getLatestEnvironment() {
-        return ApiResponse.ok(environmentQueryService.getLatestEnvironment());
+    public ApiResponse<EnvironmentLogResponse> getLatestEnvironment(@AuthenticationPrincipal Long userId) {
+        return ApiResponse.ok(environmentQueryService.getLatestEnvironment(userId));
     }
 
     @GetMapping
     public ApiResponse<List<EnvironmentLogResponse>> getEnvironmentLogs(
+            @AuthenticationPrincipal Long userId,
             @RequestParam
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             LocalDateTime start,
@@ -32,6 +34,6 @@ public class EnvironmentController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             LocalDateTime end
     ) {
-        return ApiResponse.ok(environmentQueryService.getEnvironmentLogs(start, end));
+        return ApiResponse.ok(environmentQueryService.getEnvironmentLogs(userId, start, end));
     }
 }

@@ -28,18 +28,34 @@ public interface InspectionRepository extends JpaRepository<Inspection, Long> {
                 join fetch i.product p
                 left join fetch i.defects d
                 where i.id = :inspectionId
+                and p.processRun.startedBy.id = :userId
             """)
-    Optional<Inspection> findDetailById(Long inspectionId);
+    Optional<Inspection> findDetailByIdAndUserId(Long inspectionId, Long userId);
 
     @Query("""
                 select distinct i
                 from Inspection i
                 join fetch i.product p
                 left join fetch i.defects d
+                where p.processRun.startedBy.id = :userId
                 order by i.inspectedAt desc
             """)
-    List<Inspection> findRecentInspections(Pageable pageable);
+    List<Inspection> findRecentInspectionsByUserId(Long userId, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"product", "defects"})
-    Page<Inspection> findAllByOrderByInspectedAtDesc(Pageable pageable);
+    @Query(
+            value = """
+                    select distinct i
+                    from Inspection i
+                    join i.product p
+                    left join fetch i.defects d
+                    where p.processRun.startedBy.id = :userId
+                    """,
+            countQuery = """
+                    select count(i)
+                    from Inspection i
+                    join i.product p
+                    where p.processRun.startedBy.id = :userId
+                    """
+    )
+    Page<Inspection> findAllByUserId(Long userId, Pageable pageable);
 }

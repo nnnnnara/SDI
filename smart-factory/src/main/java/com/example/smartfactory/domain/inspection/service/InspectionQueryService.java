@@ -21,24 +21,24 @@ public class InspectionQueryService {
 
     private final InspectionRepository inspectionRepository;
 
-    public InspectionResponse getInspection(Long inspectionId) {
-        Inspection inspection = inspectionRepository.findDetailById(inspectionId)
+    public InspectionResponse getInspection(Long userId, Long inspectionId) {
+        Inspection inspection = inspectionRepository.findDetailByIdAndUserId(inspectionId, userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INSPECTION_NOT_FOUND));
 
         return InspectionResponse.from(inspection);
     }
 
-    public Page<InspectionResponse> getInspections(Pageable pageable) {
-        return inspectionRepository.findAllByOrderByInspectedAtDesc(pageable)
+    public Page<InspectionResponse> getInspections(Long userId, Pageable pageable) {
+        return inspectionRepository.findAllByUserId(userId, pageable)
                 .map(InspectionResponse::from);
     }
 
-    public List<InspectionResponse> getRecentInspections(int limit) {
+    public List<InspectionResponse> getRecentInspections(Long userId, int limit) {
         if (limit <= 0) {
             throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
         }
 
-        List<Inspection> inspections = inspectionRepository.findRecentInspections(PageRequest.of(0, limit));
+        List<Inspection> inspections = inspectionRepository.findRecentInspectionsByUserId(userId, PageRequest.of(0, limit));
 
         return inspections.stream()
                 .map(InspectionResponse::from)

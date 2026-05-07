@@ -20,4 +20,6 @@ public interface ProcessRunRepository extends JpaRepository<ProcessRun, Long> {
     Optional<ProcessRun> findByIdAndStartedBy_Id(Long runId, Long userId);
 
     Optional<ProcessRun> findFirstByStatusOrderByStartedAtDesc(ProcessStatus status);
+
+    Optional<ProcessRun> findFirstByStatusAndStartedBy_IdOrderByStartedAtDesc(ProcessStatus status, Long userId);
 }

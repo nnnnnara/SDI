@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,21 +21,26 @@ public class InspectionController {
 
     @GetMapping
     public ApiResponse<Page<InspectionResponse>> getInspections(
+            @AuthenticationPrincipal Long userId,
             @PageableDefault(size = 20, sort = "inspectedAt", direction = Sort.Direction.DESC)
             org.springframework.data.domain.Pageable pageable
     ) {
-        return ApiResponse.ok(inspectionQueryService.getInspections(pageable));
+        return ApiResponse.ok(inspectionQueryService.getInspections(userId, pageable));
     }
 
     @GetMapping("/{inspectionId}")
-    public ApiResponse<InspectionResponse> getInspection(@PathVariable Long inspectionId) {
-        return ApiResponse.ok(inspectionQueryService.getInspection(inspectionId));
+    public ApiResponse<InspectionResponse> getInspection(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long inspectionId
+    ) {
+        return ApiResponse.ok(inspectionQueryService.getInspection(userId, inspectionId));
     }
 
     @GetMapping("/recent")
     public ApiResponse<List<InspectionResponse>> getRecentInspections(
+            @AuthenticationPrincipal Long userId,
             @RequestParam(defaultValue = "10") int limit
     ) {
-        return ApiResponse.ok(inspectionQueryService.getRecentInspections(limit));
+        return ApiResponse.ok(inspectionQueryService.getRecentInspections(userId, limit));
     }
 }

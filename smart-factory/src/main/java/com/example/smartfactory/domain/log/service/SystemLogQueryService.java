@@ -15,8 +15,8 @@ public class SystemLogQueryService {
 
     private final SystemLogRepository systemLogRepository;
 
-    public Page<SystemLogResponse> getSystemLogs(Pageable pageable) {
-        return systemLogRepository.findAllByOrderByCreatedAtDesc(pageable)
+    public Page<SystemLogResponse> getSystemLogs(Long userId, Pageable pageable) {
+        return systemLogRepository.findAllByProcessRun_StartedBy_IdOrderByCreatedAtDesc(userId, pageable)
                 .map(SystemLogResponse::from);
     }
 }

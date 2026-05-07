@@ -14,4 +14,10 @@ public interface EnvironmentLogRepository extends JpaRepository<EnvironmentLog, 
     Optional<EnvironmentLog> findFirstByProcessRun_IdOrderByMeasuredAtDesc(Long runId);
 
     List<EnvironmentLog> findAllByMeasuredAtBetweenOrderByMeasuredAtAsc(LocalDateTime start, LocalDateTime end);
+
+    List<EnvironmentLog> findAllByProcessRun_StartedBy_IdAndMeasuredAtBetweenOrderByMeasuredAtAsc(
+            Long userId,
+            LocalDateTime start,
+            LocalDateTime end
+    );
 }

@@ -23,9 +23,9 @@ public class EnvironmentQueryService {
     private final EnvironmentLogRepository environmentLogRepository;
     private final ProcessRunRepository processRunRepository;
 
-    public EnvironmentLogResponse getLatestEnvironment() {
+    public EnvironmentLogResponse getLatestEnvironment(Long userId) {
         ProcessRun currentRun = processRunRepository
-                .findFirstByStatusOrderByStartedAtDesc(ProcessStatus.RUNNING)
+                .findFirstByStatusAndStartedBy_IdOrderByStartedAtDesc(ProcessStatus.RUNNING, userId)
                 .orElse(null);
 
         if (currentRun == null) {
@@ -39,13 +39,13 @@ public class EnvironmentQueryService {
         return environmentLog != null ? EnvironmentLogResponse.from(environmentLog) : null;
     }
 
-    public List<EnvironmentLogResponse> getEnvironmentLogs(LocalDateTime start, LocalDateTime end) {
+    public List<EnvironmentLogResponse> getEnvironmentLogs(Long userId, LocalDateTime start, LocalDateTime end) {
         if (start.isAfter(end)) {
             throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
         }
 
         List<EnvironmentLog> logs = environmentLogRepository
-                .findAllByMeasuredAtBetweenOrderByMeasuredAtAsc(start, end);
+                .findAllByProcessRun_StartedBy_IdAndMeasuredAtBetweenOrderByMeasuredAtAsc(userId, start, end);
 
         return logs.stream()
                 .map(EnvironmentLogResponse::from)

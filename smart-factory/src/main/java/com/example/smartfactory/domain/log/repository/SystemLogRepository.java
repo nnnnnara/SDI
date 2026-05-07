@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface SystemLogRepository extends JpaRepository<SystemLog, Long> {
 
     Page<SystemLog> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+    Page<SystemLog> findAllByProcessRun_StartedBy_IdOrderByCreatedAtDesc(Long userId, Pageable pageable);
 }

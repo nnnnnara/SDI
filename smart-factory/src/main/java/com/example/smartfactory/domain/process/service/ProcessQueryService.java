@@ -32,9 +32,9 @@ public class ProcessQueryService {
                 .map(ProcessRunResponse::from);
     }
 
-    public ProcessRunResponse getCurrentRun() {
+    public ProcessRunResponse getCurrentRun(Long userId) {
         return processRunRepository
-                .findFirstByStatusOrderByStartedAtDesc(ProcessStatus.RUNNING)
+                .findFirstByStatusAndStartedBy_IdOrderByStartedAtDesc(ProcessStatus.RUNNING, userId)
                 .map(ProcessRunResponse::from)
                 .orElse(null);
     }

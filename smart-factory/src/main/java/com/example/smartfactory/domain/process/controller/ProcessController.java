@@ -50,8 +50,8 @@ public class ProcessController {
     }
 
     @GetMapping("/current")
-    public ApiResponse<ProcessRunResponse> getCurrentRun() {
-        return ApiResponse.ok(processQueryService.getCurrentRun());
+    public ApiResponse<ProcessRunResponse> getCurrentRun(@AuthenticationPrincipal Long userId) {
+        return ApiResponse.ok(processQueryService.getCurrentRun(userId));
     }
 
     @GetMapping("/{runId}")
