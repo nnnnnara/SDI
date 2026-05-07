@@ -7,13 +7,51 @@ import { Badge } from '../../components/common/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/common/Card';
 import { formatDateTime } from '../../utils/format';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 function processStatusVariant(status?: string) {
   if (status === 'RUNNING') return 'success';
   if (status === 'ERROR') return 'danger';
-  if (status === 'STOPPED') return 'warning';
   return 'default';
+}
+
+function processStatusLabel(status?: string) {
+  if (status === 'RUNNING') return '진행 중';
+  if (status === 'STOPPED') return '종료됨';
+  if (status === 'ERROR') return '오류';
+  if (status === 'READY') return '대기';
+  return status ?? '-';
+}
+
+function stopReasonVariant(stopReason?: string | null, status?: string) {
+  if (status === 'RUNNING') return 'success';
+  if (stopReason === 'NORMAL_COMPLETE') return 'success';
+  if (stopReason === 'USER_STOP') return 'warning';
+  if (status === 'ERROR') return 'danger';
+  return 'default';
+}
+
+function stopReasonLabel(stopReason?: string | null, status?: string) {
+  if (status === 'RUNNING') return '진행 중';
+  if (stopReason === 'NORMAL_COMPLETE') return '정상 완료';
+  if (stopReason === 'USER_STOP') return '사용자 중지';
+  if (status === 'ERROR') return '오류 종료';
+  return stopReason ?? '-';
+}
+
+function formatDuration(startedAt?: string | null, endedAt?: string | null) {
+  if (!startedAt) return '-';
+
+  const startTime = new Date(startedAt).getTime();
+  const endTime = endedAt ? new Date(endedAt).getTime() : Date.now();
+  const durationSeconds = Math.max(0, Math.floor((endTime - startTime) / 1000));
+  const hours = Math.floor(durationSeconds / 3600);
+  const minutes = Math.floor((durationSeconds % 3600) / 60);
+  const seconds = durationSeconds % 60;
+
+  if (hours > 0) return `${hours}시간 ${minutes}분`;
+  if (minutes > 0) return `${minutes}분 ${seconds}초`;
+  return `${seconds}초`;
 }
 
 export function HistoryPage() {
@@ -59,15 +97,17 @@ export function HistoryPage() {
       <div>
         <h1 className="text-2xl font-bold text-brand-textMain">공정 이력</h1>
         <p className="mt-1 text-sm text-brand-textSub">
-          본인이 시작한 공정 {total.toLocaleString()}건의 상태와 시간을 확인합니다.
+          전체 공정 {total.toLocaleString()}건의 진행 상태, 종료 유형, 소요 시간을 확인합니다.
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle><History className="w-5 h-5 text-brand-primary" /> 공정 실행 목록</CardTitle>
+          <CardTitle>
+            <History className="w-5 h-5 text-brand-primary" /> 공정 실행 목록
+          </CardTitle>
           <span className="text-xs text-brand-textSub">
-            {currentPage.toLocaleString()} / {totalPages.toLocaleString()} 페이지
+            {currentPage.toLocaleString()} / {totalPages.toLocaleString()} 페이지 (페이지당 {PAGE_SIZE}건)
           </span>
         </CardHeader>
         <CardContent className="p-0">
@@ -77,38 +117,54 @@ export function HistoryPage() {
                 <tr>
                   <th className="px-5 py-3 font-medium">공정 ID</th>
                   <th className="px-5 py-3 font-medium">상태</th>
-                  <th className="px-5 py-3 font-medium">시작</th>
-                  <th className="px-5 py-3 font-medium">종료</th>
-                  <th className="px-5 py-3 font-medium">정지 사유</th>
+                  <th className="px-5 py-3 font-medium">종료 유형</th>
+                  <th className="px-5 py-3 font-medium">소요 시간</th>
+                  <th className="px-5 py-3 font-medium">시작 시간</th>
+                  <th className="px-5 py-3 font-medium">종료 시간</th>
                   <th className="px-5 py-3 font-medium">시작자</th>
                 </tr>
               </thead>
               <tbody>
-                {runs.map((run) => (
-                  <tr
-                    key={run.runId}
-                    className="cursor-pointer border-t border-brand-border/60 transition-colors hover:bg-brand-background/60 focus:bg-brand-background/60 focus:outline-none"
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => goToDetail(run.runId)}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault();
-                        goToDetail(run.runId);
-                      }
-                    }}
-                  >
-                    <td className="px-5 py-3 font-mono text-brand-textMain">RUN-{run.runId}</td>
-                    <td className="px-5 py-3"><Badge variant={processStatusVariant(run.status)}>{run.status}</Badge></td>
-                    <td className="px-5 py-3 text-brand-textSub">{formatDateTime(run.startedAt)}</td>
-                    <td className="px-5 py-3 text-brand-textSub">{formatDateTime(run.endedAt)}</td>
-                    <td className="px-5 py-3 text-brand-textSub">{run.stopReason ?? '-'}</td>
-                    <td className="px-5 py-3 text-brand-textMain">{run.startedBy?.name ?? '-'}</td>
-                  </tr>
-                ))}
+                {runs.map((run) => {
+                  const isRunning = run.status === 'RUNNING';
+
+                  return (
+                    <tr
+                      key={run.runId}
+                      className={`cursor-pointer border-t border-brand-border/60 transition-colors hover:bg-brand-background/60 focus:bg-brand-background/60 focus:outline-none ${
+                        isRunning ? 'border-l-4 border-l-brand-success bg-brand-success/5' : ''
+                      }`}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => goToDetail(run.runId)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          goToDetail(run.runId);
+                        }
+                      }}
+                    >
+                      <td className="px-5 py-3 font-mono text-brand-textMain">RUN-{run.runId}</td>
+                      <td className="px-5 py-3">
+                        <Badge variant={processStatusVariant(run.status)}>{processStatusLabel(run.status)}</Badge>
+                      </td>
+                      <td className="px-5 py-3">
+                        <Badge variant={stopReasonVariant(run.stopReason, run.status)}>
+                          {stopReasonLabel(run.stopReason, run.status)}
+                        </Badge>
+                      </td>
+                      <td className={`px-5 py-3 font-semibold ${isRunning ? 'text-brand-success' : 'text-brand-primary'}`}>
+                        {formatDuration(run.startedAt, run.endedAt)}
+                      </td>
+                      <td className="px-5 py-3 text-brand-textSub">{formatDateTime(run.startedAt)}</td>
+                      <td className="px-5 py-3 text-brand-textSub">{formatDateTime(run.endedAt)}</td>
+                      <td className="px-5 py-3 text-brand-textMain">{run.startedBy?.name ?? '-'}</td>
+                    </tr>
+                  );
+                })}
                 {runs.length === 0 && (
                   <tr>
-                    <td className="px-5 py-8 text-center text-brand-textSub" colSpan={6}>
+                    <td className="px-5 py-8 text-center text-brand-textSub" colSpan={7}>
                       {loading ? '공정 이력을 불러오는 중입니다.' : '공정 이력이 없습니다.'}
                     </td>
                   </tr>
@@ -117,31 +173,28 @@ export function HistoryPage() {
             </table>
           </div>
 
-          <div className="flex items-center justify-between gap-3 border-t border-brand-border px-5 py-4 text-sm">
-            <span className="text-brand-textSub">페이지당 {PAGE_SIZE}건</span>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setPage((value) => Math.max(0, value - 1))}
-                disabled={page === 0 || loading}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-brand-border text-brand-textSub hover:text-brand-textMain disabled:cursor-not-allowed disabled:opacity-40"
-                aria-label="이전 페이지"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <span className="min-w-24 text-center text-brand-textMain">
-                {currentPage} / {totalPages || 0}
-              </span>
-              <button
-                type="button"
-                onClick={() => setPage((value) => Math.min(Math.max(totalPages - 1, 0), value + 1))}
-                disabled={page >= totalPages - 1 || loading}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-brand-border text-brand-textSub hover:text-brand-textMain disabled:cursor-not-allowed disabled:opacity-40"
-                aria-label="다음 페이지"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
+          <div className="flex items-center justify-center gap-3 border-t border-brand-border px-5 py-4 text-sm">
+            <button
+              type="button"
+              onClick={() => setPage((value) => Math.max(0, value - 1))}
+              disabled={page === 0 || loading}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-brand-border text-brand-textSub hover:text-brand-textMain disabled:cursor-not-allowed disabled:opacity-40"
+              aria-label="이전 페이지"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <span className="min-w-24 text-center text-brand-textMain">
+              {currentPage} / {totalPages || 0}
+            </span>
+            <button
+              type="button"
+              onClick={() => setPage((value) => Math.min(Math.max(totalPages - 1, 0), value + 1))}
+              disabled={page >= totalPages - 1 || loading}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-brand-border text-brand-textSub hover:text-brand-textMain disabled:cursor-not-allowed disabled:opacity-40"
+              aria-label="다음 페이지"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
         </CardContent>
       </Card>
