@@ -1,5 +1,5 @@
 import type { InspectionResponse } from '../../../api/client';
-import { formatDateTime, formatNumber } from '../../../utils/format';
+import { formatDateTime, formatPercent } from '../../../utils/format';
 import { useNavigate } from 'react-router-dom';
 import { inspectionResultClass, inspectionResultLabel } from '../../inspection/inspectionUtils';
 
@@ -41,7 +41,7 @@ export function InspectionTable({ inspections }: { inspections: InspectionRespon
                 {inspectionResultLabel(item.result)}
               </span>
             </td>
-            <td className="px-5 py-3 text-brand-textMain">{formatNumber(Number(item.confidence) * 100)}%</td>
+            <td className="px-5 py-3 text-brand-textMain">{formatPercent(item.confidence)}</td>
             <td className="px-5 py-3 text-brand-textSub">{formatDateTime(item.inspectedAt)}</td>
           </tr>
         ))}

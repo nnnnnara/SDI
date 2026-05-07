@@ -1,14 +1,6 @@
-import type { InspectionResponse, ProcessRunResponse } from '../../api/client';
+import type { InspectionResponse } from '../../api/client';
 
 export type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'default';
-
-export function processStatusLabel(status?: ProcessRunResponse['status'] | null) {
-  if (status === 'RUNNING') return '진행 중';
-  if (status === 'READY') return '대기';
-  if (status === 'STOPPED') return '중지됨';
-  if (status === 'ERROR') return '오류';
-  return '공정 없음';
-}
 
 export function statusVariant(status?: string | null): BadgeVariant {
   if (status === 'RUNNING' || status === 'SUCCESS') return 'success';
@@ -22,10 +14,6 @@ export function commandTypeLabel(commandType: string) {
   if (commandType === 'START') return '시작';
   if (commandType === 'STOP') return '중지';
   return commandType;
-}
-
-export function inspectionVariant(result: InspectionResponse['result']): BadgeVariant {
-  return result === 'GOOD' ? 'success' : 'danger';
 }
 
 export function latestByInspectedAt(items: InspectionResponse[]) {

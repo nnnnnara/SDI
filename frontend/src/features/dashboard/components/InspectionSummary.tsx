@@ -1,5 +1,5 @@
 import type { InspectionResponse } from '../../../api/client';
-import { formatDateTime, formatNumber } from '../../../utils/format';
+import { formatDateTime, formatPercent } from '../../../utils/format';
 import { inspectionResultClass, inspectionResultLabel } from '../../inspection/inspectionUtils';
 
 export function InspectionSummary({ inspection }: { inspection: InspectionResponse }) {
@@ -18,7 +18,7 @@ export function InspectionSummary({ inspection }: { inspection: InspectionRespon
         </div>
         <div className="flex justify-between gap-4">
           <dt className="whitespace-nowrap text-brand-textSub">신뢰도</dt>
-          <dd className="text-brand-textMain">{formatNumber(Number(inspection.confidence) * 100)}%</dd>
+          <dd className="text-brand-textMain">{formatPercent(inspection.confidence)}</dd>
         </div>
       </dl>
     </div>

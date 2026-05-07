@@ -5,15 +5,9 @@ import { apiClient } from '../../api/client';
 import type { ApiResponse, EnvironmentLogResponse, InspectionResponse, ProcessRunResponse } from '../../api/client';
 import { Badge } from '../../components/common/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/common/Card';
-import { formatDateTime, formatNumber } from '../../utils/format';
+import { formatDateTime, formatNumber, formatPercent } from '../../utils/format';
 import { inspectionResultClass, inspectionResultLabel } from '../inspection/inspectionUtils';
-
-function statusVariant(status?: string) {
-  if (status === 'RUNNING' || status === 'GOOD') return 'success';
-  if (status === 'ERROR' || status === 'BAD') return 'danger';
-  if (status === 'STOPPED') return 'warning';
-  return 'default';
-}
+import { processStatusDisplay, processStatusVariant, stopReasonDisplay } from './processUtils';
 
 export function ProcessDetailPage() {
   const navigate = useNavigate();
@@ -54,7 +48,7 @@ export function ProcessDetailPage() {
           <h1 className="mt-2 text-2xl font-bold text-brand-textMain">RUN-{runId} 상세</h1>
           <p className="mt-1 text-sm text-brand-textSub">공정의 종료 맥락, 환경 상태, 검사 결과를 연결해 원인 확인에 필요한 단서를 모읍니다.</p>
         </div>
-        <Badge variant={statusVariant(run?.status)}>{run?.status ?? '-'}</Badge>
+        <Badge variant={processStatusVariant(run?.status)}>{processStatusDisplay(run?.status)}</Badge>
       </div>
 
       <section className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -78,7 +72,7 @@ export function ProcessDetailPage() {
               </div>
               <div>
                 <dt className="text-brand-textSub">정지 사유</dt>
-                <dd className="mt-1 text-brand-textMain">{run?.stopReason ?? '-'}</dd>
+                <dd className="mt-1 text-brand-textMain">{stopReasonDisplay(run?.stopReason, run?.status)}</dd>
               </div>
             </dl>
           </CardContent>
@@ -147,7 +141,7 @@ export function ProcessDetailPage() {
                         {inspectionResultLabel(inspection.result)}
                       </span>
                     </td>
-                    <td className="px-5 py-3 text-brand-textMain">{formatNumber(Number(inspection.confidence) * 100)}%</td>
+                    <td className="px-5 py-3 text-brand-textMain">{formatPercent(inspection.confidence)}</td>
                     <td className="px-5 py-3 text-brand-textSub">{formatDateTime(inspection.inspectedAt)}</td>
                   </tr>
                 ))}

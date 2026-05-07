@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { apiClient } from '../../api/client';
 import type {
@@ -8,6 +8,7 @@ import type {
   InspectionResponse,
   ProcessRunResponse,
 } from '../../api/client';
+import { PageHeader } from '../../components/common/PageHeader';
 import { IdleDashboard } from './IdleDashboard';
 import { RunningDashboard } from './RunningDashboard';
 
@@ -119,10 +120,10 @@ export function DashboardPage() {
   return (
     <div className="p-6 space-y-6 max-w-[1600px] mx-auto w-full">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-brand-textMain">공정 관제</h1>
-          <p className="mt-1 text-sm text-brand-textSub">진행 중인 공정의 상태와 검사 흐름을 먼저 보고, 공정을 제어합니다.</p>
-        </div>
+        <PageHeader
+          title="공정 관제"
+          description="진행 중인 공정의 상태와 검사 흐름을 먼저 보고, 공정을 제어합니다."
+        />
         <button
           onClick={() => loadDashboardData(true)}
           disabled={refreshing}

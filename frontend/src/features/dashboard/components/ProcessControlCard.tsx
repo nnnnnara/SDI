@@ -4,7 +4,8 @@ import type { ProcessRunResponse } from '../../../api/client';
 import { Badge } from '../../../components/common/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/common/Card';
 import { formatDateTime } from '../../../utils/format';
-import { cameraStreams, processStatusLabel, statusVariant } from '../dashboardUtils';
+import { processStatusDisplay, processStatusVariant } from '../../process/processUtils';
+import { cameraStreams } from '../dashboardUtils';
 
 interface Props {
   isRunning: boolean;
@@ -23,7 +24,7 @@ export function ProcessControlCard({ isRunning, loading, onStartProcess, onStopP
           현재 공정
         </CardTitle>
         {processStatus?.status && (
-          <Badge variant={statusVariant(processStatus.status)}>{processStatusLabel(processStatus.status)}</Badge>
+          <Badge variant={processStatusVariant(processStatus.status)}>{processStatusDisplay(processStatus.status)}</Badge>
         )}
       </CardHeader>
       <CardContent>

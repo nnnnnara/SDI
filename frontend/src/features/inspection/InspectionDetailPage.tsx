@@ -4,7 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import { apiClient } from '../../api/client';
 import type { ApiResponse, InspectionResponse } from '../../api/client';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/common/Card';
-import { formatDateTime, formatNumber } from '../../utils/format';
+import { formatDateTime, formatPercent } from '../../utils/format';
 import {
   confidenceClass,
   confidenceLevelLabel,
@@ -62,7 +62,7 @@ export function InspectionDetailPage() {
               <div>
                 <dt className="text-brand-textSub">신뢰도</dt>
                 <dd className={`mt-1 text-2xl font-bold ${confidenceClass(inspection?.confidence)}`}>
-                  {formatNumber(confidencePercent)}%
+                  {formatPercent(inspection?.confidence)}
                   <span className="ml-2 text-xs font-medium text-brand-textSub">{confidenceLevelLabel(inspection?.confidence)}</span>
                 </dd>
               </div>
