@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+﻿import { useCallback, useEffect, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { apiClient } from '../../api/client';
 import type {
@@ -121,9 +121,7 @@ export function DashboardPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-brand-textMain">공정 관제</h1>
-          <p className="mt-1 text-sm text-brand-textSub">
-            현재 공정 상태를 확인하고, 시작/중지 제어와 모니터링을 한 화면에서 수행합니다.
-          </p>
+          <p className="mt-1 text-sm text-brand-textSub">진행 중인 공정의 상태와 검사 흐름을 먼저 보고, 공정을 제어합니다.</p>
         </div>
         <button
           onClick={() => loadDashboardData(true)}

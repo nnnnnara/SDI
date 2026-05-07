@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+﻿import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CloudFog, Search } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine } from 'recharts';
 import { apiClient } from '../../api/client';
@@ -91,7 +91,7 @@ export function EnvironmentLogPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-brand-textMain">환경 로그</h1>
-          <p className="mt-1 text-sm text-brand-textSub">기간별 온습도와 미세먼지 흐름을 확인합니다.</p>
+          <p className="mt-1 text-sm text-brand-textSub">온습도와 미세먼지 변화를 나눠 보고, 검사 환경의 이상 징후를 파악합니다.</p>
         </div>
         <form
           className="flex flex-wrap items-end gap-3"

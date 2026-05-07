@@ -1,4 +1,4 @@
-import { Camera } from 'lucide-react';
+﻿import { Camera } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/common/Card';
 
 const cameras = [
@@ -17,7 +17,7 @@ export function CameraPage() {
     <div className="p-6 space-y-6 max-w-[1400px] mx-auto w-full">
       <div>
         <h1 className="text-2xl font-bold text-brand-textMain">카메라 모니터링</h1>
-        <p className="mt-1 text-sm text-brand-textSub">1번, 2번 카메라의 실시간 영상을 확인합니다.</p>
+        <p className="mt-1 text-sm text-brand-textSub">공정 라인의 촬영 상태를 직접 확인해 검사 이미지의 원인을 빠르게 대조합니다.</p>
       </div>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-2">

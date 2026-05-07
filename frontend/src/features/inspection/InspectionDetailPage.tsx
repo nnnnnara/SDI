@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Boxes, Image as ImageIcon, ScanSearch } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { apiClient } from '../../api/client';
@@ -39,6 +39,7 @@ export function InspectionDetailPage() {
             <ArrowLeft className="w-4 h-4" /> 검사 결과
           </Link>
           <h1 className="mt-2 text-2xl font-bold text-brand-textMain">검사 {inspectionId} 상세</h1>
+          <p className="mt-1 text-sm text-brand-textSub">AI 판정의 신뢰도와 결함 위치를 이미지 근거와 함께 검토합니다.</p>
         </div>
         <span className={`inline-flex rounded-md border px-3 py-1.5 text-sm font-bold ${inspectionResultClass(inspection?.result)}`}>
           {inspectionResultLabel(inspection?.result)}

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+﻿import { useCallback, useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, History } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../api/client';
@@ -58,7 +58,7 @@ export function HistoryPage() {
   const navigate = useNavigate();
   const [runs, setRuns] = useState<ProcessRunResponse[]>([]);
   const [page, setPage] = useState(0);
-  const [total, setTotal] = useState(0);
+  const [, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -96,9 +96,7 @@ export function HistoryPage() {
     <div className="p-6 space-y-6 max-w-[1400px] mx-auto w-full">
       <div>
         <h1 className="text-2xl font-bold text-brand-textMain">공정 이력</h1>
-        <p className="mt-1 text-sm text-brand-textSub">
-          전체 공정 {total.toLocaleString()}건의 진행 상태, 종료 유형, 소요 시간을 확인합니다.
-        </p>
+        <p className="mt-1 text-sm text-brand-textSub">종료 유형과 소요 시간을 기준으로 공정이 정상적으로 완료됐는지 추적합니다.</p>
       </div>
 
       <Card>

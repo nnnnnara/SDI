@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+﻿import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight, Terminal, X } from 'lucide-react';
 import { apiClient } from '../../api/client';
 import type { ApiResponse, PageResponse, SystemLogResponse } from '../../api/client';
@@ -29,7 +29,7 @@ function levelDescription(level: SystemLogResponse['level']) {
 export function SystemLogPage() {
   const [logs, setLogs] = useState<SystemLogResponse[]>([]);
   const [page, setPage] = useState(0);
-  const [total, setTotal] = useState(0);
+  const [, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
   const [selectedSource, setSelectedSource] = useState<string | null>(null);
@@ -68,9 +68,7 @@ export function SystemLogPage() {
     <div className="p-6 space-y-6 max-w-[1400px] mx-auto w-full">
       <div>
         <h1 className="text-2xl font-bold text-brand-textMain">시스템 로그</h1>
-        <p className="mt-1 text-sm text-brand-textSub">
-          전체 {total.toLocaleString()}건의 시스템 이벤트와 공정 관련 로그를 확인합니다.
-        </p>
+        <p className="mt-1 text-sm text-brand-textSub">경고와 오류의 발생 위치를 소스별로 좁혀 공정 운영 중 확인할 이슈를 추적합니다.</p>
       </div>
 
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">

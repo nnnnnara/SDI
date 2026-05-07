@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+﻿import { useCallback, useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, ClipboardCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../api/client';
@@ -13,7 +13,7 @@ export function InspectionPage() {
   const navigate = useNavigate();
   const [inspections, setInspections] = useState<InspectionResponse[]>([]);
   const [page, setPage] = useState(0);
-  const [total, setTotal] = useState(0);
+  const [, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -51,9 +51,7 @@ export function InspectionPage() {
     <div className="p-6 space-y-6 max-w-[1400px] mx-auto w-full">
       <div>
         <h1 className="text-2xl font-bold text-brand-textMain">검사 결과</h1>
-        <p className="mt-1 text-sm text-brand-textSub">
-          전체 {total.toLocaleString()}건의 검사 판정과 결함 유형을 확인합니다.
-        </p>
+        <p className="mt-1 text-sm text-brand-textSub">AI 판정, 신뢰도, 결함 유형을 함께 비교해 재검토가 필요한 제품을 찾습니다.</p>
       </div>
 
       <Card>

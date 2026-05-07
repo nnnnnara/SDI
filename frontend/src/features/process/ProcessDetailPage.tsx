@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, ClipboardCheck, Gauge } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { apiClient } from '../../api/client';
@@ -52,6 +52,7 @@ export function ProcessDetailPage() {
             <ArrowLeft className="w-4 h-4" /> 공정 이력
           </Link>
           <h1 className="mt-2 text-2xl font-bold text-brand-textMain">RUN-{runId} 상세</h1>
+          <p className="mt-1 text-sm text-brand-textSub">공정의 종료 맥락, 환경 상태, 검사 결과를 연결해 원인 확인에 필요한 단서를 모읍니다.</p>
         </div>
         <Badge variant={statusVariant(run?.status)}>{run?.status ?? '-'}</Badge>
       </div>
