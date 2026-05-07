@@ -63,7 +63,6 @@ deploy:
     - echo "GRAFANA_PASSWORD=$GRAFANA_PASSWORD" >> .env
     - echo "JWT_SECRET=$JWT_SECRET" >> .env
     - echo "VITE_API_BASE_URL=$VITE_API_BASE_URL" >> .env
-    - echo "VITE_CAMERA_STREAM_URL=$VITE_CAMERA_STREAM_URL" >> .env
 
     # 배포
     - docker compose -f docker-compose.prod.yml down

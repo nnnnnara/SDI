@@ -11,6 +11,14 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
+      '/camera-view-1': {
+        target: 'http://100.99.75.18:8001',
+        changeOrigin: true,
+      },
+      '/camera-view-2': {
+        target: 'http://100.99.75.18:8001',
+        changeOrigin: true,
+      },
     },
   },
 })
