@@ -31,8 +31,9 @@ export function CameraPage() {
                 <iframe
                   title={`${camera.name} stream`}
                   src={camera.url}
-                  className="h-full w-full"
+                  className="h-full w-full overflow-hidden border-0"
                   allow="autoplay; fullscreen"
+                  scrolling="no"
                 />
               </div>
             </CardContent>

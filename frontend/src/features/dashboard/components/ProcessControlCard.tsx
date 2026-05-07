@@ -78,8 +78,9 @@ export function ProcessControlCard({ isRunning, loading, onStartProcess, onStopP
                   <iframe
                     title={`${camera.name} dashboard stream`}
                     src={camera.url}
-                    className="h-full w-full"
+                    className="h-full w-full overflow-hidden border-0"
                     allow="autoplay; fullscreen"
+                    scrolling="no"
                   />
                 </div>
               </div>
