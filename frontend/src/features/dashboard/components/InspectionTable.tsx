@@ -1,8 +1,7 @@
 import type { InspectionResponse } from '../../../api/client';
-import { Badge } from '../../../components/common/Badge';
 import { formatDateTime, formatNumber } from '../../../utils/format';
-import { inspectionVariant } from '../dashboardUtils';
 import { useNavigate } from 'react-router-dom';
+import { inspectionResultClass, inspectionResultLabel } from '../../inspection/inspectionUtils';
 
 export function InspectionTable({ inspections }: { inspections: InspectionResponse[] }) {
   const navigate = useNavigate();
@@ -38,7 +37,9 @@ export function InspectionTable({ inspections }: { inspections: InspectionRespon
           >
             <td className="px-5 py-3 text-brand-textMain">{item.serialNo}</td>
             <td className="px-5 py-3">
-              <Badge variant={inspectionVariant(item.result)}>{item.result}</Badge>
+              <span className={`inline-flex min-w-14 justify-center rounded-md border px-2.5 py-1 text-xs font-bold ${inspectionResultClass(item.result)}`}>
+                {inspectionResultLabel(item.result)}
+              </span>
             </td>
             <td className="px-5 py-3 text-brand-textMain">{formatNumber(Number(item.confidence) * 100)}%</td>
             <td className="px-5 py-3 text-brand-textSub">{formatDateTime(item.inspectedAt)}</td>

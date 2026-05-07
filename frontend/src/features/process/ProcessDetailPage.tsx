@@ -6,6 +6,7 @@ import type { ApiResponse, EnvironmentLogResponse, InspectionResponse, ProcessRu
 import { Badge } from '../../components/common/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/common/Card';
 import { formatDateTime, formatNumber } from '../../utils/format';
+import { inspectionResultClass, inspectionResultLabel } from '../inspection/inspectionUtils';
 
 function statusVariant(status?: string) {
   if (status === 'RUNNING' || status === 'GOOD') return 'success';
@@ -140,7 +141,11 @@ export function ProcessDetailPage() {
                   >
                     <td className="px-5 py-3 font-mono text-brand-textMain">{inspection.inspectionId}</td>
                     <td className="px-5 py-3 text-brand-textSub">{inspection.serialNo}</td>
-                    <td className="px-5 py-3"><Badge variant={statusVariant(inspection.result)}>{inspection.result}</Badge></td>
+                    <td className="px-5 py-3">
+                      <span className={`inline-flex min-w-14 justify-center rounded-md border px-2.5 py-1 text-xs font-bold ${inspectionResultClass(inspection.result)}`}>
+                        {inspectionResultLabel(inspection.result)}
+                      </span>
+                    </td>
                     <td className="px-5 py-3 text-brand-textMain">{formatNumber(Number(inspection.confidence) * 100)}%</td>
                     <td className="px-5 py-3 text-brand-textSub">{formatDateTime(inspection.inspectedAt)}</td>
                   </tr>

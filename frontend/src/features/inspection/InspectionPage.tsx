@@ -3,9 +3,9 @@ import { ChevronLeft, ChevronRight, ClipboardCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../api/client';
 import type { ApiResponse, InspectionResponse, PageResponse } from '../../api/client';
-import { Badge } from '../../components/common/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/common/Card';
 import { formatDateTime, formatNumber } from '../../utils/format';
+import { confidenceClass, defectTypeSummary, inspectionResultClass, inspectionResultLabel } from './inspectionUtils';
 
 const PAGE_SIZE = 20;
 
@@ -52,13 +52,15 @@ export function InspectionPage() {
       <div>
         <h1 className="text-2xl font-bold text-brand-textMain">검사 결과</h1>
         <p className="mt-1 text-sm text-brand-textSub">
-          전체 {total.toLocaleString()}건의 검사 결과와 불량 정보를 확인합니다.
+          전체 {total.toLocaleString()}건의 검사 판정과 결함 유형을 확인합니다.
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle><ClipboardCheck className="w-5 h-5 text-brand-success" /> 검사 목록</CardTitle>
+          <CardTitle>
+            <ClipboardCheck className="w-5 h-5 text-brand-success" /> 검사 목록
+          </CardTitle>
           <span className="text-xs text-brand-textSub">
             {currentPage.toLocaleString()} / {totalPages.toLocaleString()} 페이지
           </span>
@@ -70,10 +72,11 @@ export function InspectionPage() {
                 <tr>
                   <th className="px-5 py-3 font-medium">검사 ID</th>
                   <th className="px-5 py-3 font-medium">S/N</th>
-                  <th className="px-5 py-3 font-medium">검사 결과</th>
+                  <th className="px-5 py-3 font-medium">AI 판정</th>
                   <th className="px-5 py-3 font-medium">신뢰도</th>
-                  <th className="px-5 py-3 font-medium">불량 개수</th>
-                  <th className="px-5 py-3 font-medium">검사 시간</th>
+                  <th className="px-5 py-3 font-medium">결함 유형</th>
+                  <th className="px-5 py-3 font-medium">결함 수</th>
+                  <th className="px-5 py-3 font-medium">검사 시각</th>
                 </tr>
               </thead>
               <tbody>
@@ -94,16 +97,21 @@ export function InspectionPage() {
                     <td className="px-5 py-3 font-mono text-brand-textMain">{item.inspectionId}</td>
                     <td className="px-5 py-3 text-brand-textSub">{item.serialNo}</td>
                     <td className="px-5 py-3">
-                      <Badge variant={item.result === 'GOOD' ? 'success' : 'danger'}>{item.result}</Badge>
+                      <span className={`inline-flex min-w-14 justify-center rounded-md border px-2.5 py-1 text-xs font-bold ${inspectionResultClass(item.result)}`}>
+                        {inspectionResultLabel(item.result)}
+                      </span>
                     </td>
-                    <td className="px-5 py-3 text-brand-textMain">{formatNumber(Number(item.confidence) * 100)}%</td>
+                    <td className={`px-5 py-3 font-semibold ${confidenceClass(item.confidence)}`}>
+                      {formatNumber(Number(item.confidence) * 100)}%
+                    </td>
+                    <td className="px-5 py-3 text-brand-textMain">{defectTypeSummary(item.defects)}</td>
                     <td className="px-5 py-3 text-brand-textSub">{item.defects.length.toLocaleString()}건</td>
                     <td className="px-5 py-3 text-brand-textSub">{formatDateTime(item.inspectedAt)}</td>
                   </tr>
                 ))}
                 {inspections.length === 0 && (
                   <tr>
-                    <td className="px-5 py-8 text-center text-brand-textSub" colSpan={6}>
+                    <td className="px-5 py-8 text-center text-brand-textSub" colSpan={7}>
                       {loading ? '검사 결과를 불러오는 중입니다.' : '검사 결과가 없습니다.'}
                     </td>
                   </tr>

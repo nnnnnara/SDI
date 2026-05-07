@@ -1,14 +1,15 @@
 import type { InspectionResponse } from '../../../api/client';
-import { Badge } from '../../../components/common/Badge';
 import { formatDateTime, formatNumber } from '../../../utils/format';
-import { inspectionVariant } from '../dashboardUtils';
+import { inspectionResultClass, inspectionResultLabel } from '../../inspection/inspectionUtils';
 
 export function InspectionSummary({ inspection }: { inspection: InspectionResponse }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
         <span className="font-mono text-lg font-semibold text-brand-textMain">{inspection.serialNo}</span>
-        <Badge variant={inspectionVariant(inspection.result)}>{inspection.result}</Badge>
+        <span className={`inline-flex min-w-14 justify-center rounded-md border px-2.5 py-1 text-xs font-bold ${inspectionResultClass(inspection.result)}`}>
+          {inspectionResultLabel(inspection.result)}
+        </span>
       </div>
       <dl className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
         <div className="flex justify-between gap-4">
