@@ -43,7 +43,7 @@ public class ProcessCommandService {
         ProcessRun saved = processRunRepository.save(processRun);
         ControlCommand command = saveCommand(saved, user, CommandType.START);
 
-        mqttCommandPublisher.publishStart();
+        mqttCommandPublisher.publishStart(saved.getId());
         command.markSent();
 
         return ProcessRunResponse.from(saved);
@@ -65,7 +65,7 @@ public class ProcessCommandService {
         processRun.stop(request.stopReason());
         ControlCommand command = saveCommand(processRun, user, CommandType.STOP);
 
-        mqttCommandPublisher.publishStop();
+        mqttCommandPublisher.publishStop(processRun.getId());
         command.markSent();
 
         return ProcessRunResponse.from(processRun);

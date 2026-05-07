@@ -18,12 +18,12 @@ public class MqttCommandPublisher {
     private final MessageChannel mqttOutboundChannel;
     private final ObjectMapper objectMapper;
 
-    public void publishStart() {
-        publish(new CommandMessage(CommandType.START, LocalDateTime.now()));
+    public void publishStart(Long runId) {
+        publish(new CommandMessage(runId, CommandType.START, LocalDateTime.now()));
     }
 
-    public void publishStop() {
-        publish(new CommandMessage(CommandType.STOP, LocalDateTime.now()));
+    public void publishStop(Long runId) {
+        publish(new CommandMessage(runId, CommandType.STOP, LocalDateTime.now()));
     }
 
     private void publish(CommandMessage commandMessage) {
