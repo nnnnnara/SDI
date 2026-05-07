@@ -1,19 +1,9 @@
 import { Link, useLocation } from 'react-router-dom';
-import {
-  Activity,
-  Camera,
-  ClipboardList,
-  FileText,
-  History,
-  LayoutDashboard,
-  Settings,
-  Terminal,
-} from 'lucide-react';
+import { Camera, ClipboardList, FileText, History, LayoutDashboard, Settings, Terminal } from 'lucide-react';
 import logoUrl from '../../assets/sdi_logo.png';
 
 const MENU_ITEMS = [
-  { id: 'dashboard', path: '/dashboard', label: '대시보드', icon: LayoutDashboard },
-  { id: 'process', path: '/process', label: '공정 제어', icon: Activity },
+  { id: 'dashboard', path: '/dashboard', label: '공정 관제', icon: LayoutDashboard },
   { id: 'history', path: '/history', label: '공정 이력', icon: History },
   { id: 'inspection', path: '/inspection', label: '검사 결과', icon: ClipboardList },
   { id: 'env-log', path: '/env-log', label: '환경 로그', icon: FileText },

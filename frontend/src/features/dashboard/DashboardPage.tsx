@@ -1,21 +1,24 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Activity, ClipboardCheck, Gauge, ShieldCheck } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { apiClient } from '../../api/client';
 import type {
   ApiResponse,
+  ControlCommandResponse,
   EnvironmentLogResponse,
   InspectionResponse,
   ProcessRunResponse,
 } from '../../api/client';
-import { Badge } from '../../components/common/Badge';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/common/Card';
-import { formatDateTime, formatNumber } from '../../utils/format';
-import { DashboardMetric } from './components/DashboardMetric';
+import { IdleDashboard } from './IdleDashboard';
+import { RunningDashboard } from './RunningDashboard';
 
 export function DashboardPage() {
   const [processStatus, setProcessStatus] = useState<ProcessRunResponse | null>(null);
   const [environmentData, setEnvironmentData] = useState<EnvironmentLogResponse | null>(null);
   const [inspections, setInspections] = useState<InspectionResponse[]>([]);
+  const [currentProcessInspections, setCurrentProcessInspections] = useState<InspectionResponse[]>([]);
+  const [commands, setCommands] = useState<ControlCommandResponse[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchCurrentProcess = useCallback(async () => {
     try {
@@ -37,115 +40,102 @@ export function DashboardPage() {
     }
   }, []);
 
-  useEffect(() => {
-    let ignore = false;
-
-    async function loadDashboardData() {
-      try {
-        const [process, environment, inspRes] = await Promise.all([
-          fetchCurrentProcess(),
-          fetchLatestEnvironment(),
-          apiClient.get<ApiResponse<InspectionResponse[]>>('/inspections/recent', { params: { limit: 20 } }),
-        ]);
-
-        if (ignore) return;
-
-        setProcessStatus(process);
-        setEnvironmentData(environment);
-        setInspections(inspRes.data.data || []);
-      } catch (error) {
-        console.error('Failed to fetch dashboard data:', error);
-      }
+  const fetchRecentCommands = useCallback(async () => {
+    try {
+      const commandRes = await apiClient.get<ApiResponse<ControlCommandResponse[]>>('/commands/recent', {
+        params: { limit: 8 },
+      });
+      return commandRes.data.data || [];
+    } catch (error) {
+      console.error('Failed to fetch control commands:', error);
+      return [];
     }
+  }, []);
 
+  const loadDashboardData = useCallback(async (showRefreshIndicator = false) => {
+    if (showRefreshIndicator) setRefreshing(true);
+
+    try {
+      const [process, environment, inspectionRes, latestCommands] = await Promise.all([
+        fetchCurrentProcess(),
+        fetchLatestEnvironment(),
+        apiClient.get<ApiResponse<InspectionResponse[]>>('/inspections/recent', { params: { limit: 20 } }),
+        fetchRecentCommands(),
+      ]);
+      const currentInspectionRes = process?.runId
+        ? await apiClient.get<ApiResponse<InspectionResponse[]>>(`/process/${process.runId}/inspections`)
+        : null;
+
+      setProcessStatus(process);
+      setEnvironmentData(environment);
+      setInspections(inspectionRes.data.data || []);
+      setCurrentProcessInspections(currentInspectionRes?.data.data || []);
+      setCommands(latestCommands);
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error);
+    } finally {
+      if (showRefreshIndicator) setRefreshing(false);
+    }
+  }, [fetchCurrentProcess, fetchLatestEnvironment, fetchRecentCommands]);
+
+  useEffect(() => {
     void loadDashboardData();
+  }, [loadDashboardData]);
 
-    return () => {
-      ignore = true;
-    };
-  }, [fetchCurrentProcess, fetchLatestEnvironment]);
+  const startProcess = async () => {
+    try {
+      setLoading(true);
+      await apiClient.post('/process/start');
+      await loadDashboardData();
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const totalInspections = inspections.length;
-  const defects = inspections.filter((item) => item.result === 'BAD').length;
-  const defectRate = totalInspections > 0 ? (defects / totalInspections) * 100 : 0;
+  const stopProcess = async () => {
+    if (!processStatus?.runId) return;
+
+    try {
+      setLoading(true);
+      await apiClient.post(`/process/${processStatus.runId}/stop`, { stopReason: 'USER_STOP' });
+      await loadDashboardData();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const isRunning = processStatus?.status === 'RUNNING';
+  const dashboardProps = {
+    commands,
+    currentProcessInspections,
+    environmentData,
+    inspections,
+    loading,
+    onStartProcess: startProcess,
+    onStopProcess: stopProcess,
+    processStatus,
+  };
 
   return (
     <div className="p-6 space-y-6 max-w-[1600px] mx-auto w-full">
-      <div>
-        <h1 className="text-2xl font-bold text-brand-textMain">대시보드</h1>
-        <p className="mt-1 text-sm text-brand-textSub">공정 상태, 검사 결과, 현재 환경 값을 한눈에 확인합니다.</p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-brand-textMain">공정 관제</h1>
+          <p className="mt-1 text-sm text-brand-textSub">
+            현재 공정 상태를 확인하고, 시작/중지 제어와 모니터링을 한 화면에서 수행합니다.
+          </p>
+        </div>
+        <button
+          onClick={() => loadDashboardData(true)}
+          disabled={refreshing}
+          className="inline-flex items-center gap-2 rounded-lg border border-brand-border px-3 py-2 text-sm text-brand-textSub hover:text-brand-textMain disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+          새로고침
+        </button>
       </div>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        <DashboardMetric
-          label="현재 공정"
-          value={
-            <span className="flex flex-wrap items-center gap-2">
-              {processStatus?.status ?? 'NONE'}
-              <Badge variant={processStatus?.status === 'RUNNING' ? 'success' : 'default'}>
-                {processStatus?.status === 'RUNNING' ? '진행 중' : '대기'}
-              </Badge>
-            </span>
-          }
-          helper={processStatus?.runId ? `RUN-${processStatus.runId}` : '진행 중인 공정이 없습니다.'}
-          icon={<Activity className="w-6 h-6" />}
-        />
-        <DashboardMetric
-          label="최근 검사"
-          value={`${totalInspections.toLocaleString()}건`}
-          helper={`불량 ${defects.toLocaleString()}건`}
-          icon={<ClipboardCheck className="w-6 h-6" />}
-        />
-        <DashboardMetric
-          label="환경 상태"
-          value={environmentData ? `${formatNumber(environmentData.temperature)} C` : '-'}
-          helper={environmentData ? `습도 ${formatNumber(environmentData.humidity)}%` : '진행 중인 공정의 환경 로그가 없습니다.'}
-          icon={<Gauge className="w-6 h-6" />}
-        />
-        <DashboardMetric
-          label="불량률"
-          value={totalInspections > 0 ? `${formatNumber(defectRate)}%` : '-'}
-          helper="최근 검사 기준"
-          icon={<ShieldCheck className="w-6 h-6" />}
-        />
-      </section>
-
-      <section>
-        <Card>
-          <CardHeader>
-            <CardTitle><ClipboardCheck className="w-5 h-5 text-brand-success" /> 최근 검사 결과</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <table className="w-full text-sm">
-              <thead className="bg-brand-background/50 text-left text-xs uppercase text-brand-textSub">
-                <tr>
-                  <th className="px-5 py-3 font-medium">S/N</th>
-                  <th className="px-5 py-3 font-medium">결과</th>
-                  <th className="px-5 py-3 font-medium">검사 시간</th>
-                </tr>
-              </thead>
-              <tbody>
-                {inspections.slice(0, 5).map((item) => (
-                  <tr key={item.inspectionId} className="border-t border-brand-border/60">
-                    <td className="px-5 py-3 text-brand-textMain">{item.serialNo}</td>
-                    <td className="px-5 py-3">
-                      <Badge variant={item.result === 'GOOD' ? 'success' : 'danger'}>{item.result}</Badge>
-                    </td>
-                    <td className="px-5 py-3 text-brand-textSub">{formatDateTime(item.inspectedAt)}</td>
-                  </tr>
-                ))}
-                {inspections.length === 0 && (
-                  <tr>
-                    <td className="px-5 py-8 text-center text-brand-textSub" colSpan={3}>
-                      최근 검사 결과가 없습니다.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
-      </section>
+      {isRunning ? <RunningDashboard {...dashboardProps} /> : <IdleDashboard {...dashboardProps} />}
     </div>
   );
 }

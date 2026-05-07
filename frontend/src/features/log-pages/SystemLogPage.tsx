@@ -71,7 +71,7 @@ export function SystemLogPage() {
                   <th className="px-5 py-3 font-medium">레벨</th>
                   <th className="px-5 py-3 font-medium">시간</th>
                   <th className="px-5 py-3 font-medium">소스</th>
-                  <th className="px-5 py-3 font-medium">Run ID</th>
+                  <th className="px-5 py-3 font-medium">공정 ID</th>
                   <th className="px-5 py-3 font-medium">메시지</th>
                 </tr>
               </thead>

@@ -3,7 +3,6 @@ import { LoginPage } from './features/auth/LoginPage';
 import { SignupPage } from './features/auth/SignupPage';
 import { ProtectedRoute } from './components/layout/ProtectedRoute';
 import { DashboardPage } from './features/dashboard/DashboardPage';
-import { ProcessPage } from './features/process/ProcessPage';
 import { HistoryPage } from './features/process/HistoryPage';
 import { ProcessDetailPage } from './features/process/ProcessDetailPage';
 import { InspectionPage } from './features/inspection/InspectionPage';
@@ -21,7 +20,7 @@ function App() {
       {/* Protected Routes Wrapper */}
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/process" element={<ProcessPage />} />
+        <Route path="/process" element={<Navigate to="/dashboard" replace />} />
         <Route path="/history" element={<HistoryPage />} />
         <Route path="/history/:runId" element={<ProcessDetailPage />} />
         <Route path="/inspection" element={<InspectionPage />} />

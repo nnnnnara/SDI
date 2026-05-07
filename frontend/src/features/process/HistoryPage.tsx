@@ -75,7 +75,7 @@ export function HistoryPage() {
             <table className="w-full text-sm">
               <thead className="bg-brand-background/50 text-left text-xs uppercase text-brand-textSub">
                 <tr>
-                  <th className="px-5 py-3 font-medium">Run ID</th>
+                  <th className="px-5 py-3 font-medium">공정 ID</th>
                   <th className="px-5 py-3 font-medium">상태</th>
                   <th className="px-5 py-3 font-medium">시작</th>
                   <th className="px-5 py-3 font-medium">종료</th>
