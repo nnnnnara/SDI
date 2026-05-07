@@ -12,26 +12,59 @@ interface TokenResponse {
   name: string;
 }
 
+type LoginField = 'loginId' | 'password';
+type LoginErrors = Partial<Record<LoginField, string>>;
+
+const fieldBaseClass =
+  'w-full bg-brand-background border rounded-lg px-4 py-2.5 text-brand-textMain placeholder:text-brand-textSub/70 focus:outline-none focus:ring-1 transition-colors';
+const fieldNormalClass = 'border-brand-border focus:border-brand-primary focus:ring-brand-primary';
+const fieldErrorClass = 'border-brand-danger focus:border-brand-danger focus:ring-brand-danger';
+
 export function LoginPage() {
   const navigate = useNavigate();
   const [loginId, setLoginId] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<LoginErrors>({});
+  const [touched, setTouched] = useState<Partial<Record<LoginField, boolean>>>({});
+
+  const validate = (data = { loginId, password }) => {
+    const nextErrors: LoginErrors = {};
+
+    if (!data.loginId.trim()) {
+      nextErrors.loginId = '아이디를 입력해 주세요.';
+    }
+
+    if (!data.password) {
+      nextErrors.password = '비밀번호를 입력해 주세요.';
+    }
+
+    return nextErrors;
+  };
+
+  const updateFieldError = (field: LoginField, nextData = { loginId, password }) => {
+    const nextErrors = validate(nextData);
+    setFieldErrors((prev) => ({ ...prev, [field]: nextErrors[field] }));
+  };
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     setError('');
 
-    if (!loginId || !password) {
-      setError('아이디와 비밀번호를 입력해주세요.');
+    const nextErrors = validate();
+    setFieldErrors(nextErrors);
+    setTouched({ loginId: true, password: true });
+
+    if (Object.keys(nextErrors).length > 0) {
+      setError('입력값을 확인해 주세요.');
       return;
     }
 
     try {
       setLoading(true);
       const res = await apiClient.post<ApiResponse<TokenResponse>>('/auth/login', {
-        loginId,
+        loginId: loginId.trim(),
         password,
       });
 
@@ -45,7 +78,7 @@ export function LoginPage() {
       const message = axios.isAxiosError<{ message?: string }>(err)
         ? err.response?.data?.message
         : undefined;
-      setError(message || '로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.');
+      setError(message || '로그인에 실패했습니다. 아이디와 비밀번호를 다시 확인해 주세요.');
     } finally {
       setLoading(false);
     }
@@ -72,33 +105,69 @@ export function LoginPage() {
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogin} className="space-y-4" noValidate>
           <div>
-            <label className="block text-sm font-medium text-brand-textSub mb-1">아이디</label>
+            <label htmlFor="loginId" className="mb-1 block text-sm font-medium text-brand-textSub">
+              아이디
+            </label>
             <input
+              id="loginId"
               type="text"
               value={loginId}
-              onChange={(event) => setLoginId(event.target.value)}
-              className="w-full bg-brand-background border border-brand-border rounded-lg px-4 py-2.5 text-brand-textMain focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-colors"
+              onChange={(event) => {
+                const nextLoginId = event.target.value;
+                setLoginId(nextLoginId);
+                if (touched.loginId) updateFieldError('loginId', { loginId: nextLoginId, password });
+              }}
+              onBlur={() => {
+                setTouched((prev) => ({ ...prev, loginId: true }));
+                updateFieldError('loginId');
+              }}
+              className={`${fieldBaseClass} ${fieldErrors.loginId ? fieldErrorClass : fieldNormalClass}`}
               placeholder="아이디를 입력하세요"
+              aria-invalid={Boolean(fieldErrors.loginId)}
+              aria-describedby={fieldErrors.loginId ? 'loginId-error' : undefined}
             />
+            {fieldErrors.loginId && (
+              <p id="loginId-error" className="mt-1.5 text-xs text-brand-danger">
+                {fieldErrors.loginId}
+              </p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-brand-textSub mb-1">비밀번호</label>
+            <label htmlFor="password" className="mb-1 block text-sm font-medium text-brand-textSub">
+              비밀번호
+            </label>
             <input
+              id="password"
               type="password"
               value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="w-full bg-brand-background border border-brand-border rounded-lg px-4 py-2.5 text-brand-textMain focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-colors"
+              onChange={(event) => {
+                const nextPassword = event.target.value;
+                setPassword(nextPassword);
+                if (touched.password) updateFieldError('password', { loginId, password: nextPassword });
+              }}
+              onBlur={() => {
+                setTouched((prev) => ({ ...prev, password: true }));
+                updateFieldError('password');
+              }}
+              className={`${fieldBaseClass} ${fieldErrors.password ? fieldErrorClass : fieldNormalClass}`}
               placeholder="비밀번호를 입력하세요"
+              aria-invalid={Boolean(fieldErrors.password)}
+              aria-describedby={fieldErrors.password ? 'password-error' : undefined}
             />
+            {fieldErrors.password && (
+              <p id="password-error" className="mt-1.5 text-xs text-brand-danger">
+                {fieldErrors.password}
+              </p>
+            )}
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-brand-primary text-white font-bold py-3 rounded-lg hover:bg-brand-primary/90 transition-colors mt-6 flex items-center justify-center"
+            className="w-full bg-brand-primary text-white font-bold py-3 rounded-lg hover:bg-brand-primary/90 disabled:cursor-not-allowed disabled:opacity-70 transition-colors mt-6 flex items-center justify-center"
           >
             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : '로그인'}
           </button>
