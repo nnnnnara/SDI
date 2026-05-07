@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, ClipboardCheck, Gauge } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { apiClient } from '../../api/client';
 import type { ApiResponse, EnvironmentLogResponse, InspectionResponse, ProcessRunResponse } from '../../api/client';
 import { Badge } from '../../components/common/Badge';
@@ -15,6 +15,7 @@ function statusVariant(status?: string) {
 }
 
 export function ProcessDetailPage() {
+  const navigate = useNavigate();
   const { runId } = useParams();
   const [run, setRun] = useState<ProcessRunResponse | null>(null);
   const [environmentLogs, setEnvironmentLogs] = useState<EnvironmentLogResponse[]>([]);
@@ -37,6 +38,10 @@ export function ProcessDetailPage() {
   }, [runId]);
 
   const latestEnvironment = useMemo(() => environmentLogs.at(-1), [environmentLogs]);
+
+  const goToInspection = (inspectionId: number) => {
+    navigate(`/inspection/${inspectionId}`);
+  };
 
   return (
     <div className="p-6 space-y-6 max-w-[1400px] mx-auto w-full">
@@ -79,7 +84,7 @@ export function ProcessDetailPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle><Gauge className="w-5 h-5 text-brand-info" /> 최신 환경</CardTitle>
+            <CardTitle><Gauge className="w-5 h-5 text-brand-info" /> 환경 상태</CardTitle>
           </CardHeader>
           <CardContent>
             <dl className="space-y-3 text-sm">
@@ -97,7 +102,7 @@ export function ProcessDetailPage() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-brand-textMain">{inspections.length.toLocaleString()}</div>
-            <p className="mt-2 text-sm text-brand-textSub">이 공정에 연결된 검사 결과</p>
+            <p className="mt-2 text-sm text-brand-textSub">이 공정에서 생성된 검사 결과</p>
           </CardContent>
         </Card>
       </section>
@@ -113,26 +118,36 @@ export function ProcessDetailPage() {
                 <tr>
                   <th className="px-5 py-3 font-medium">검사 ID</th>
                   <th className="px-5 py-3 font-medium">S/N</th>
-                  <th className="px-5 py-3 font-medium">결과</th>
+                  <th className="px-5 py-3 font-medium">검사 결과</th>
                   <th className="px-5 py-3 font-medium">신뢰도</th>
                   <th className="px-5 py-3 font-medium">검사 시간</th>
-                  <th className="px-5 py-3 font-medium">상세</th>
                 </tr>
               </thead>
               <tbody>
                 {inspections.map((inspection) => (
-                  <tr key={inspection.inspectionId} className="border-t border-brand-border/60">
+                  <tr
+                    key={inspection.inspectionId}
+                    className="cursor-pointer border-t border-brand-border/60 transition-colors hover:bg-brand-background/60 focus:bg-brand-background/60 focus:outline-none"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => goToInspection(inspection.inspectionId)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        goToInspection(inspection.inspectionId);
+                      }
+                    }}
+                  >
                     <td className="px-5 py-3 font-mono text-brand-textMain">{inspection.inspectionId}</td>
                     <td className="px-5 py-3 text-brand-textSub">{inspection.serialNo}</td>
                     <td className="px-5 py-3"><Badge variant={statusVariant(inspection.result)}>{inspection.result}</Badge></td>
                     <td className="px-5 py-3 text-brand-textMain">{formatNumber(Number(inspection.confidence) * 100)}%</td>
                     <td className="px-5 py-3 text-brand-textSub">{formatDateTime(inspection.inspectedAt)}</td>
-                    <td className="px-5 py-3"><Link className="text-brand-primary hover:underline" to={`/inspection/${inspection.inspectionId}`}>보기</Link></td>
                   </tr>
                 ))}
                 {inspections.length === 0 && (
                   <tr>
-                    <td className="px-5 py-8 text-center text-brand-textSub" colSpan={6}>연결된 검사 결과가 없습니다.</td>
+                    <td className="px-5 py-8 text-center text-brand-textSub" colSpan={5}>생성된 검사 결과가 없습니다.</td>
                   </tr>
                 )}
               </tbody>
