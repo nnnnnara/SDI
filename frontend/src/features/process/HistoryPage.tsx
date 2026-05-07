@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, Eye, History } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ChevronLeft, ChevronRight, History } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../api/client';
 import type { ApiResponse, PageResponse, ProcessRunResponse } from '../../api/client';
 import { Badge } from '../../components/common/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/common/Card';
 import { formatDateTime } from '../../utils/format';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 20;
 
 function processStatusVariant(status?: string) {
   if (status === 'RUNNING') return 'success';
@@ -17,6 +17,7 @@ function processStatusVariant(status?: string) {
 }
 
 export function HistoryPage() {
+  const navigate = useNavigate();
   const [runs, setRuns] = useState<ProcessRunResponse[]>([]);
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState(0);
@@ -49,12 +50,16 @@ export function HistoryPage() {
 
   const currentPage = totalPages === 0 ? 0 : page + 1;
 
+  const goToDetail = (runId: number) => {
+    navigate(`/history/${runId}`);
+  };
+
   return (
     <div className="p-6 space-y-6 max-w-[1400px] mx-auto w-full">
       <div>
         <h1 className="text-2xl font-bold text-brand-textMain">공정 이력</h1>
         <p className="mt-1 text-sm text-brand-textSub">
-          본인이 시작한 공정 {total.toLocaleString()}건을 확인합니다.
+          본인이 시작한 공정 {total.toLocaleString()}건의 상태와 시간을 확인합니다.
         </p>
       </div>
 
@@ -76,31 +81,34 @@ export function HistoryPage() {
                   <th className="px-5 py-3 font-medium">종료</th>
                   <th className="px-5 py-3 font-medium">정지 사유</th>
                   <th className="px-5 py-3 font-medium">시작자</th>
-                  <th className="px-5 py-3 font-medium">상세</th>
                 </tr>
               </thead>
               <tbody>
                 {runs.map((run) => (
-                  <tr key={run.runId} className="border-t border-brand-border/60">
+                  <tr
+                    key={run.runId}
+                    className="cursor-pointer border-t border-brand-border/60 transition-colors hover:bg-brand-background/60 focus:bg-brand-background/60 focus:outline-none"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => goToDetail(run.runId)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        goToDetail(run.runId);
+                      }
+                    }}
+                  >
                     <td className="px-5 py-3 font-mono text-brand-textMain">RUN-{run.runId}</td>
                     <td className="px-5 py-3"><Badge variant={processStatusVariant(run.status)}>{run.status}</Badge></td>
                     <td className="px-5 py-3 text-brand-textSub">{formatDateTime(run.startedAt)}</td>
                     <td className="px-5 py-3 text-brand-textSub">{formatDateTime(run.endedAt)}</td>
                     <td className="px-5 py-3 text-brand-textSub">{run.stopReason ?? '-'}</td>
                     <td className="px-5 py-3 text-brand-textMain">{run.startedBy?.name ?? '-'}</td>
-                    <td className="px-5 py-3">
-                      <Link
-                        to={`/history/${run.runId}`}
-                        className="inline-flex items-center gap-1 text-brand-primary hover:underline"
-                      >
-                        <Eye className="w-4 h-4" /> 보기
-                      </Link>
-                    </td>
                   </tr>
                 ))}
                 {runs.length === 0 && (
                   <tr>
-                    <td className="px-5 py-8 text-center text-brand-textSub" colSpan={7}>
+                    <td className="px-5 py-8 text-center text-brand-textSub" colSpan={6}>
                       {loading ? '공정 이력을 불러오는 중입니다.' : '공정 이력이 없습니다.'}
                     </td>
                   </tr>
@@ -110,9 +118,7 @@ export function HistoryPage() {
           </div>
 
           <div className="flex items-center justify-between gap-3 border-t border-brand-border px-5 py-4 text-sm">
-            <span className="text-brand-textSub">
-              페이지당 {PAGE_SIZE}건
-            </span>
+            <span className="text-brand-textSub">페이지당 {PAGE_SIZE}건</span>
             <div className="flex items-center gap-2">
               <button
                 type="button"

@@ -6,7 +6,9 @@ import com.example.smartfactory.domain.inspection.repository.InspectionRepositor
 import com.example.smartfactory.global.exception.BusinessException;
 import com.example.smartfactory.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,11 @@ public class InspectionQueryService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.INSPECTION_NOT_FOUND));
 
         return InspectionResponse.from(inspection);
+    }
+
+    public Page<InspectionResponse> getInspections(Pageable pageable) {
+        return inspectionRepository.findAllByOrderByInspectedAtDesc(pageable)
+                .map(InspectionResponse::from);
     }
 
     public List<InspectionResponse> getRecentInspections(int limit) {

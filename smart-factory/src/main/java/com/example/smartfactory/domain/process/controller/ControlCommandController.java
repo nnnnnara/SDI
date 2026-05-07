@@ -25,7 +25,7 @@ public class ControlCommandController {
     @GetMapping
     public ApiResponse<Page<ControlCommandResponse>> getCommands(
             @AuthenticationPrincipal Long userId,
-            @PageableDefault(size = 10, sort = "issuedAt", direction = Sort.Direction.DESC)
+            @PageableDefault(size = 20, sort = "issuedAt", direction = Sort.Direction.DESC)
             org.springframework.data.domain.Pageable pageable
     ) {
         return ApiResponse.ok(controlCommandQueryService.getCommands(userId, pageable));

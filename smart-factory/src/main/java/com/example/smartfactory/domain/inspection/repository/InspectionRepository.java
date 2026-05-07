@@ -1,7 +1,9 @@
 package com.example.smartfactory.domain.inspection.repository;
 
 import com.example.smartfactory.domain.inspection.entity.Inspection;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -37,4 +39,7 @@ public interface InspectionRepository extends JpaRepository<Inspection, Long> {
                 order by i.inspectedAt desc
             """)
     List<Inspection> findRecentInspections(Pageable pageable);
+
+    @EntityGraph(attributePaths = {"product", "defects"})
+    Page<Inspection> findAllByOrderByInspectedAtDesc(Pageable pageable);
 }

@@ -43,7 +43,7 @@ public class ProcessController {
     @GetMapping
     public ApiResponse<Page<ProcessRunResponse>> getRuns(
             @AuthenticationPrincipal Long userId,
-            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)
+            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
         return ApiResponse.ok(processQueryService.getRuns(userId, pageable));

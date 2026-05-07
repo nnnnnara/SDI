@@ -4,6 +4,9 @@ import com.example.smartfactory.domain.inspection.dto.response.InspectionRespons
 import com.example.smartfactory.domain.inspection.service.InspectionQueryService;
 import com.example.smartfactory.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +17,14 @@ import java.util.List;
 public class InspectionController {
 
     private final InspectionQueryService inspectionQueryService;
+
+    @GetMapping
+    public ApiResponse<Page<InspectionResponse>> getInspections(
+            @PageableDefault(size = 20, sort = "inspectedAt", direction = Sort.Direction.DESC)
+            org.springframework.data.domain.Pageable pageable
+    ) {
+        return ApiResponse.ok(inspectionQueryService.getInspections(pageable));
+    }
 
     @GetMapping("/{inspectionId}")
     public ApiResponse<InspectionResponse> getInspection(@PathVariable Long inspectionId) {
