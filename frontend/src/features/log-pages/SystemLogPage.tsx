@@ -34,6 +34,7 @@ export function SystemLogPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
   const [selectedSource, setSelectedSource] = useState<string | null>(null);
+  const [selectedLevel, setSelectedLevel] = useState<SystemLogResponse['level'] | null>(null);
 
   const fetchLogs = useCallback(async () => {
     try {
@@ -58,8 +59,8 @@ export function SystemLogPage() {
   }, [fetchLogs]);
 
   const visibleLogs = useMemo(
-    () => logs.filter((log) => !selectedSource || log.source === selectedSource),
-    [logs, selectedSource]
+    () => logs.filter((log) => (!selectedSource || log.source === selectedSource) && (!selectedLevel || log.level === selectedLevel)),
+    [logs, selectedLevel, selectedSource]
   );
   const currentPage = currentPageNumber(page, totalPages);
 
@@ -67,13 +68,13 @@ export function SystemLogPage() {
     <div className="p-6 space-y-6 max-w-[1400px] mx-auto w-full">
       <PageHeader
         title="시스템 로그"
-        description="경고와 오류의 발생 위치를 소스별로 좁혀 공정 운영 중 확인할 이슈를 추적합니다."
+        description="레벨과 소스별로 시스템 이벤트를 확인하고 공정 흐름의 이상 징후를 추적합니다."
       />
 
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <LevelGuide level="INFO" />
-        <LevelGuide level="WARN" />
-        <LevelGuide level="ERROR" />
+        <LevelGuide level="INFO" onSelect={setSelectedLevel} />
+        <LevelGuide level="WARN" onSelect={setSelectedLevel} />
+        <LevelGuide level="ERROR" onSelect={setSelectedLevel} />
       </section>
 
       <Card>
@@ -92,6 +93,16 @@ export function SystemLogPage() {
                 <X className="h-3 w-3" />
               </button>
             )}
+            {selectedLevel && (
+              <button
+                type="button"
+                onClick={() => setSelectedLevel(null)}
+                className="inline-flex items-center gap-1 rounded-full border border-brand-warning/40 bg-brand-warning/10 px-2.5 py-1 text-brand-warning"
+              >
+                레벨: {levelLabel(selectedLevel)}
+                <X className="h-3 w-3" />
+              </button>
+            )}
             <span>{currentPage.toLocaleString()} / {totalPages.toLocaleString()} 페이지</span>
           </div>
         </CardHeader>
@@ -101,7 +112,7 @@ export function SystemLogPage() {
               <thead className="bg-brand-background/50 text-left text-xs uppercase text-brand-textSub">
                 <tr>
                   <th className="px-5 py-3 font-medium">레벨</th>
-                  <th className="px-5 py-3 font-medium">시각</th>
+                  <th className="px-5 py-3 font-medium">시간</th>
                   <th className="px-5 py-3 font-medium">소스</th>
                   <th className="px-5 py-3 font-medium">공정 ID</th>
                   <th className="px-5 py-3 font-medium">메시지</th>
@@ -111,9 +122,11 @@ export function SystemLogPage() {
                 {visibleLogs.map((log) => (
                   <tr key={log.logId} className="border-t border-brand-border/60 align-top">
                     <td className="px-5 py-3">
-                      <Badge variant={levelVariant(log.level)} title={levelDescription(log.level)}>
-                        {levelLabel(log.level)}
-                      </Badge>
+                      <button type="button" onClick={() => setSelectedLevel(log.level)} title="같은 레벨 로그만 보기">
+                        <Badge variant={levelVariant(log.level)} title={levelDescription(log.level)}>
+                          {levelLabel(log.level)}
+                        </Badge>
+                      </button>
                     </td>
                     <td className="px-5 py-3 whitespace-nowrap font-mono text-xs text-brand-textSub">{formatDateTime(log.createdAt)}</td>
                     <td className="px-5 py-3 whitespace-nowrap">
@@ -148,14 +161,18 @@ export function SystemLogPage() {
   );
 }
 
-function LevelGuide({ level }: { level: SystemLogResponse['level'] }) {
+function LevelGuide({ level, onSelect }: { level: SystemLogResponse['level']; onSelect: (level: SystemLogResponse['level']) => void }) {
   return (
-    <div className="rounded-lg border border-brand-border bg-brand-card px-4 py-3">
+    <button
+      type="button"
+      onClick={() => onSelect(level)}
+      className="rounded-lg border border-brand-border bg-brand-card px-4 py-3 text-left transition-colors hover:border-brand-primary/50"
+    >
       <div className="flex items-center justify-between gap-3">
         <Badge variant={levelVariant(level)}>{levelLabel(level)}</Badge>
         <span className="text-xs font-mono text-brand-textSub">{level}</span>
       </div>
       <p className="mt-2 text-xs text-brand-textSub">{levelDescription(level)}</p>
-    </div>
+    </button>
   );
 }

@@ -9,6 +9,7 @@ import { InspectionPage } from './features/inspection/InspectionPage';
 import { InspectionDetailPage } from './features/inspection/InspectionDetailPage';
 import { EnvironmentLogPage } from './features/log-pages/EnvironmentLogPage';
 import { SystemLogPage } from './features/log-pages/SystemLogPage';
+import { SystemLogDetailPage } from './features/log-pages/SystemLogDetailPage';
 import { CameraPage } from './features/camera/CameraPage';
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
         <Route path="/inspection/:inspectionId" element={<InspectionDetailPage />} />
         <Route path="/env-log" element={<EnvironmentLogPage />} />
         <Route path="/sys-log" element={<SystemLogPage />} />
+        <Route path="/sys-log/:logId" element={<SystemLogDetailPage />} />
         <Route path="/camera" element={<CameraPage />} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

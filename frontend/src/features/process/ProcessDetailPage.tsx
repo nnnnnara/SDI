@@ -17,8 +17,8 @@ import { formatDateTime, formatNumber, formatPercent } from '../../utils/format'
 import { defectTypeSummary, inspectionResultClass, inspectionResultLabel } from '../inspection/inspectionUtils';
 import { processStatusDisplay, processStatusVariant, stopReasonDisplay } from './processUtils';
 
-const SYSTEM_LOG_LOOKUP_SIZE = 100;
 const SECTION_PAGE_SIZE = 5;
+const SYSTEM_LOG_LOOKUP_SIZE = 100;
 
 export function ProcessDetailPage() {
   const navigate = useNavigate();
@@ -55,17 +55,9 @@ export function ProcessDetailPage() {
   }, [runId]);
 
   const latestEnvironment = useMemo(() => environmentLogs.at(-1), [environmentLogs]);
-  const defectCount = useMemo(
-    () => inspections.reduce((total, inspection) => total + inspection.defects.length, 0),
-    [inspections]
-  );
-  const badInspectionCount = useMemo(
-    () => inspections.filter((inspection) => inspection.result === 'BAD').length,
-    [inspections]
-  );
-  const inspectionTotalPages = getTotalPages(inspections.length);
-  const environmentTotalPages = getTotalPages(environmentLogs.length);
-  const systemLogTotalPages = getTotalPages(systemLogs.length);
+  const defectCount = useMemo(() => inspections.reduce((total, item) => total + item.defects.length, 0), [inspections]);
+  const badInspectionCount = useMemo(() => inspections.filter((item) => item.result === 'BAD').length, [inspections]);
+
   const visibleInspections = getPageItems(inspections, inspectionPage);
   const visibleEnvironmentLogs = getPageItems(environmentLogs, environmentPage);
   const visibleSystemLogs = getPageItems(systemLogs, systemLogPage);
@@ -187,62 +179,52 @@ export function ProcessDetailPage() {
             </table>
           </div>
           {inspections.length > SECTION_PAGE_SIZE && (
-            <Pagination
-              loading={false}
-              page={inspectionPage}
-              pageSize={SECTION_PAGE_SIZE}
-              setPage={setInspectionPage}
-              totalPages={inspectionTotalPages}
-            />
+            <Pagination loading={false} page={inspectionPage} pageSize={SECTION_PAGE_SIZE} setPage={setInspectionPage} totalPages={getTotalPages(inspections.length)} />
           )}
         </CardContent>
       </Card>
 
-      <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <section className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
         <Card>
           <CardHeader>
             <CardTitle><Gauge className="w-5 h-5 text-brand-info" /> 공정 환경 로그</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <table className="w-full table-fixed text-sm">
-              <thead className="bg-brand-background/50 text-left text-xs uppercase text-brand-textSub">
-                <tr>
-                  <th className="w-[22%] px-5 py-3 font-medium">측정 시간</th>
-                  <th className="w-[19.5%] px-4 py-3 font-medium">온도</th>
-                  <th className="w-[19.5%] px-4 py-3 font-medium">습도</th>
-                  <th className="w-[19.5%] px-4 py-3 font-medium">PM2.5</th>
-                  <th className="w-[19.5%] px-4 py-3 font-medium">PM10</th>
-                </tr>
-              </thead>
-              <tbody>
-                {visibleEnvironmentLogs.map((log, index) => {
-                  const previous = environmentLogs[environmentPage * SECTION_PAGE_SIZE + index - 1];
-
-                  return (
-                    <tr key={log.envLogId} className="border-t border-brand-border/60">
-                      <td className="px-5 py-3 text-brand-textSub">{formatDateTime(log.measuredAt)}</td>
-                      <TrendValue value={log.temperature} previous={previous?.temperature} unit="C" />
-                      <TrendValue value={log.humidity} previous={previous?.humidity} unit="%" />
-                      <TrendValue value={log.pm25} previous={previous?.pm25} unit="ug/m3" />
-                      <TrendValue value={log.pm10} previous={previous?.pm10} unit="ug/m3" />
-                    </tr>
-                  );
-                })}
-                {environmentLogs.length === 0 && (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-brand-background/50 text-left text-xs uppercase text-brand-textSub">
                   <tr>
-                    <td className="px-5 py-8 text-center text-brand-textSub" colSpan={5}>이 공정에 연결된 환경 로그가 없습니다.</td>
+                    <th className="px-5 py-3 font-medium">측정 시간</th>
+                    <th className="px-5 py-3 font-medium">온도</th>
+                    <th className="px-5 py-3 font-medium">습도</th>
+                    <th className="px-5 py-3 font-medium">PM2.5</th>
+                    <th className="px-5 py-3 font-medium">PM10</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {visibleEnvironmentLogs.map((log, index) => {
+                    const previous = environmentLogs[environmentPage * SECTION_PAGE_SIZE + index - 1];
+
+                    return (
+                      <tr key={log.envLogId} className="border-t border-brand-border/60">
+                        <td className="px-5 py-3 text-brand-textSub">{formatDateTime(log.measuredAt)}</td>
+                        <TrendValue value={log.temperature} previous={previous?.temperature} unit="C" />
+                        <TrendValue value={log.humidity} previous={previous?.humidity} unit="%" />
+                        <TrendValue value={log.pm25} previous={previous?.pm25} unit="ug/m3" />
+                        <TrendValue value={log.pm10} previous={previous?.pm10} unit="ug/m3" />
+                      </tr>
+                    );
+                  })}
+                  {environmentLogs.length === 0 && (
+                    <tr>
+                      <td className="px-5 py-8 text-center text-brand-textSub" colSpan={5}>이 공정에 연결된 환경 로그가 없습니다.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
             {environmentLogs.length > SECTION_PAGE_SIZE && (
-              <Pagination
-                loading={false}
-                page={environmentPage}
-                pageSize={SECTION_PAGE_SIZE}
-                setPage={setEnvironmentPage}
-                totalPages={environmentTotalPages}
-              />
+              <Pagination loading={false} page={environmentPage} pageSize={SECTION_PAGE_SIZE} setPage={setEnvironmentPage} totalPages={getTotalPages(environmentLogs.length)} />
             )}
           </CardContent>
         </Card>
@@ -253,24 +235,40 @@ export function ProcessDetailPage() {
           </CardHeader>
           <CardContent className="p-0">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full table-fixed text-sm">
                 <thead className="bg-brand-background/50 text-left text-xs uppercase text-brand-textSub">
                   <tr>
-                    <th className="w-44 px-5 py-3 font-medium">시간</th>
-                    <th className="w-32 px-5 py-3 font-medium">레벨</th>
-                    <th className="w-44 px-5 py-3 font-medium">소스</th>
+                    <th className="w-[22%] px-5 py-3 font-medium">시간</th>
+                    <th className="w-[14%] px-5 py-3 font-medium">레벨</th>
+                    <th className="w-[18%] px-5 py-3 font-medium">소스</th>
                     <th className="px-5 py-3 font-medium">메시지</th>
                   </tr>
                 </thead>
                 <tbody>
                   {visibleSystemLogs.map((log) => (
-                    <tr key={log.logId} className="border-t border-brand-border/60 align-middle">
+                    <tr
+                      key={log.logId}
+                      className="cursor-pointer border-t border-brand-border/60 align-middle transition-colors hover:bg-brand-background/60 focus:bg-brand-background/60 focus:outline-none"
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => navigate(`/sys-log/${log.logId}`, { state: { log } })}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          navigate(`/sys-log/${log.logId}`, { state: { log } });
+                        }
+                      }}
+                    >
                       <td className="px-5 py-3 align-middle whitespace-nowrap text-brand-textSub">{formatDateTime(log.createdAt)}</td>
                       <td className="px-5 py-3 align-middle">
                         <Badge variant={systemLogVariant(log.level)}>{log.level}</Badge>
                       </td>
-                      <td className="px-5 py-3 align-middle whitespace-nowrap text-brand-textSub">{log.source}</td>
-                      <td className="px-5 py-3 align-top leading-relaxed text-brand-textMain break-words">{log.message}</td>
+                      <td className="px-5 py-3 align-middle text-brand-textSub">
+                        <span className="block truncate" title={log.source}>{log.source}</span>
+                      </td>
+                      <td className="px-5 py-3 align-middle">
+                        <span className="block overflow-hidden text-ellipsis whitespace-nowrap text-brand-textMain" title={log.message}>{log.message}</span>
+                      </td>
                     </tr>
                   ))}
                   {systemLogs.length === 0 && (
@@ -282,13 +280,7 @@ export function ProcessDetailPage() {
               </table>
             </div>
             {systemLogs.length > SECTION_PAGE_SIZE && (
-              <Pagination
-                loading={false}
-                page={systemLogPage}
-                pageSize={SECTION_PAGE_SIZE}
-                setPage={setSystemLogPage}
-                totalPages={systemLogTotalPages}
-              />
+              <Pagination loading={false} page={systemLogPage} pageSize={SECTION_PAGE_SIZE} setPage={setSystemLogPage} totalPages={getTotalPages(systemLogs.length)} />
             )}
           </CardContent>
         </Card>
@@ -334,8 +326,8 @@ function TrendValue({ value, previous, unit }: { value?: number | null; previous
   const trendInfo = trend(value, previous);
 
   return (
-    <td className="px-4 py-3 text-brand-textMain">
-      <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+    <td className="px-5 py-3 text-brand-textMain">
+      <span className="inline-flex items-center gap-1 whitespace-nowrap">
         <span>{formatNumber(value)} {unit}</span>
         {trendInfo && (
           <span className={`text-xs font-semibold leading-none ${trendInfo.className}`} title={`이전 측정 대비 ${formatNumber(Math.abs(trendInfo.diff))} ${unit}`}>
