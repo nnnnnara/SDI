@@ -37,7 +37,7 @@ export function EnvironmentStatusCard({ environmentData }: { environmentData: En
         </dl>
         <div className="mt-5 flex items-start gap-2 rounded-lg border border-brand-border bg-brand-background/40 px-3 py-2 text-xs text-brand-textSub">
           <Timer className="mt-0.5 h-4 w-4 shrink-0 text-brand-info" />
-          <span>환경 상태는 가장 최근에 수집된 센서 로그를 표시합니다.</span>
+          <span>최근 센서 로그 기준입니다.</span>
         </div>
       </CardContent>
     </Card>

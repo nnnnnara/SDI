@@ -16,10 +16,14 @@ export function Sidebar() {
 
   return (
     <aside className="w-64 bg-brand-card border-r border-brand-border h-screen flex flex-col shrink-0">
-      <div className="h-16 flex items-center px-6 border-b border-brand-border">
+      <Link
+        to="/dashboard"
+        aria-label="홈으로 이동"
+        className="h-16 flex items-center px-6 border-b border-brand-border transition-colors hover:bg-brand-border/20 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-primary/40"
+      >
         <img src={logoUrl} alt="SDI Logo" className="w-8 h-8 mr-3 object-contain rounded" />
         <h1 className="text-xl font-bold text-brand-textMain tracking-wide">SDI</h1>
-      </div>
+      </Link>
 
       <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
         <div className="text-xs font-semibold text-brand-textSub uppercase tracking-wider mb-4 px-2">Main Menu</div>
