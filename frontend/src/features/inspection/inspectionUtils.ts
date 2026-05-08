@@ -1,5 +1,13 @@
 import type { InspectionDefectResponse, InspectionResponse } from '../../api/client';
 
+const DEFECT_TYPE_LABELS: Record<string, string> = {
+  DENT: '찍힘',
+  SCRATCH: '흠집',
+  LEAK: '누수',
+  MISASSEMBLY: '조립 불량',
+  MISPRINT: '각인 불량',
+};
+
 export function inspectionResultLabel(result?: InspectionResponse['result'] | null) {
   if (result === 'GOOD') return '정상';
   if (result === 'BAD') return '불량';
@@ -30,8 +38,13 @@ export function uniqueDefectTypes(defects: InspectionDefectResponse[] = []) {
   return Array.from(new Set(defects.map((defect) => defect.defectType).filter(Boolean)));
 }
 
+export function defectTypeLabel(defectType?: string | null) {
+  if (!defectType) return '-';
+  return DEFECT_TYPE_LABELS[defectType] ?? defectType;
+}
+
 export function defectTypeSummary(defects: InspectionDefectResponse[] = []) {
-  const types = uniqueDefectTypes(defects);
+  const types = uniqueDefectTypes(defects).map(defectTypeLabel);
   if (types.length === 0) return '-';
   if (types.length <= 2) return types.join(', ');
   return `${types.slice(0, 2).join(', ')} 외 ${types.length - 2}종`;

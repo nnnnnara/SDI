@@ -8,6 +8,7 @@ import { formatDateTime, formatPercent } from '../../utils/format';
 import {
   confidenceClass,
   confidenceLevelLabel,
+  defectTypeLabel,
   defectTypeSummary,
   inspectionResultClass,
   inspectionResultLabel,
@@ -136,7 +137,7 @@ export function InspectionDetailPage() {
                     <td className="px-5 py-3 font-mono text-brand-textMain">{defect.defectId}</td>
                     <td className="px-5 py-3">
                       <span className="rounded-md border border-brand-danger/40 bg-brand-danger/10 px-2.5 py-1 text-xs font-semibold text-brand-danger">
-                        {defect.defectType}
+                        {defectTypeLabel(defect.defectType)}
                       </span>
                     </td>
                     <td className="px-5 py-3 text-brand-textSub">{defect.bboxX}</td>
