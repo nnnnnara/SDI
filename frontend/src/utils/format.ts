@@ -1,23 +1,29 @@
 export function formatDateTime(value?: string | null) {
   if (!value) return '-';
-  return new Date(value).toLocaleString('ko-KR', {
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-  });
+  const parsed = parseLocalDateTime(value);
+  if (!parsed) return '-';
+  return `${parsed.month}.${parsed.day}. ${parsed.hour}:${parsed.minute}:${parsed.second}`;
 }
 
 export function formatTime(value?: string | null) {
   if (!value) return '-';
-  return new Date(value).toLocaleTimeString('ko-KR', {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-  });
+  const parsed = parseLocalDateTime(value);
+  if (!parsed) return '-';
+  return `${parsed.hour}:${parsed.minute}:${parsed.second}`;
+}
+
+function parseLocalDateTime(value: string) {
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/);
+  if (!match) return null;
+
+  return {
+    year: match[1],
+    month: match[2],
+    day: match[3],
+    hour: match[4],
+    minute: match[5],
+    second: match[6] ?? '00',
+  };
 }
 
 export function formatNumber(value?: number | string | null, digits = 1) {
