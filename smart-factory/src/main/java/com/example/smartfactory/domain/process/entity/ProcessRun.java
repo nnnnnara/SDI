@@ -58,6 +58,10 @@ public class ProcessRun extends BaseEntity {
     }
 
     public void stop(String stopReason) {
+        if (this.status != ProcessStatus.RUNNING) {
+            return;
+        }
+
         this.status = ProcessStatus.STOPPED;
         this.stopReason = stopReason;
         this.endedAt = LocalDateTime.now();

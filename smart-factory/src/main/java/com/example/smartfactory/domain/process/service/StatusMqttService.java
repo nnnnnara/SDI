@@ -20,15 +20,27 @@ public class StatusMqttService {
     private final ProcessRunRepository processRunRepository;
     private final SystemLogCommandService systemLogCommandService;
 
+    private static final String NORMAL_COMPLETE = "NORMAL_COMPLETE";
+
     @Transactional
     public void handle(StatusMessage message) {
         ProcessRun processRun = processRunRepository.findById(message.runId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.PROCESS_RUN_NOT_FOUND));
 
-        processRun.updateStatus(message.status());
+        updateProcessStatus(processRun, message.status());
         saveStatusLogIfNeeded(message);
 
         log.info("Process status updated. runId={}, status={}", message.runId(), message.status());
+    }
+
+    private void updateProcessStatus(ProcessRun processRun, ProcessStatus status) {
+        if (status == ProcessStatus.STOPPED) {
+            processRun.stop(NORMAL_COMPLETE);
+        } else if (status == ProcessStatus.ERROR) {
+            processRun.markError();
+        } else {
+            processRun.updateStatus(status);
+        }
     }
 
     private void saveStatusLogIfNeeded(StatusMessage message) {
