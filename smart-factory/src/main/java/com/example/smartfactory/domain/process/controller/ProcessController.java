@@ -7,9 +7,9 @@ import com.example.smartfactory.domain.process.dto.request.StopProcessRequest;
 import com.example.smartfactory.domain.process.service.ProcessCommandService;
 import com.example.smartfactory.domain.process.service.ProcessQueryService;
 import com.example.smartfactory.global.response.ApiResponse;
+import com.example.smartfactory.global.response.PageResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -41,12 +41,12 @@ public class ProcessController {
     }
 
     @GetMapping
-    public ApiResponse<Page<ProcessRunResponse>> getRuns(
+    public ApiResponse<PageResponse<ProcessRunResponse>> getRuns(
             @AuthenticationPrincipal Long userId,
             @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-        return ApiResponse.ok(processQueryService.getRuns(userId, pageable));
+        return ApiResponse.ok(PageResponse.from(processQueryService.getRuns(userId, pageable)));
     }
 
     @GetMapping("/current")

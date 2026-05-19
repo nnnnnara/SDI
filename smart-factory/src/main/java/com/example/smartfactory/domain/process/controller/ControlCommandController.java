@@ -3,8 +3,8 @@ package com.example.smartfactory.domain.process.controller;
 import com.example.smartfactory.domain.process.dto.response.ControlCommandResponse;
 import com.example.smartfactory.domain.process.service.ControlCommandQueryService;
 import com.example.smartfactory.global.response.ApiResponse;
+import com.example.smartfactory.global.response.PageResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,12 +23,12 @@ public class ControlCommandController {
     private final ControlCommandQueryService controlCommandQueryService;
 
     @GetMapping
-    public ApiResponse<Page<ControlCommandResponse>> getCommands(
+    public ApiResponse<PageResponse<ControlCommandResponse>> getCommands(
             @AuthenticationPrincipal Long userId,
             @PageableDefault(size = 20, sort = "issuedAt", direction = Sort.Direction.DESC)
             org.springframework.data.domain.Pageable pageable
     ) {
-        return ApiResponse.ok(controlCommandQueryService.getCommands(userId, pageable));
+        return ApiResponse.ok(PageResponse.from(controlCommandQueryService.getCommands(userId, pageable)));
     }
 
     @GetMapping("/recent")

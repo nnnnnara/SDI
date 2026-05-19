@@ -3,8 +3,8 @@ package com.example.smartfactory.domain.inspection.controller;
 import com.example.smartfactory.domain.inspection.dto.response.InspectionResponse;
 import com.example.smartfactory.domain.inspection.service.InspectionQueryService;
 import com.example.smartfactory.global.response.ApiResponse;
+import com.example.smartfactory.global.response.PageResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,12 +20,12 @@ public class InspectionController {
     private final InspectionQueryService inspectionQueryService;
 
     @GetMapping
-    public ApiResponse<Page<InspectionResponse>> getInspections(
+    public ApiResponse<PageResponse<InspectionResponse>> getInspections(
             @AuthenticationPrincipal Long userId,
             @PageableDefault(size = 20, sort = "inspectedAt", direction = Sort.Direction.DESC)
             org.springframework.data.domain.Pageable pageable
     ) {
-        return ApiResponse.ok(inspectionQueryService.getInspections(userId, pageable));
+        return ApiResponse.ok(PageResponse.from(inspectionQueryService.getInspections(userId, pageable)));
     }
 
     @GetMapping("/{inspectionId}")
