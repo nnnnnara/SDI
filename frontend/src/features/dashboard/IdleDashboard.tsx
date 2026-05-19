@@ -1,7 +1,6 @@
 import { ClipboardCheck } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/common/Card';
 import { CommandHistoryTable } from './components/CommandHistoryTable';
-import { EnvironmentStatusCard } from './components/EnvironmentStatusCard';
 import { InspectionTable } from './components/InspectionTable';
 import { ProcessControlCard } from './components/ProcessControlCard';
 import type { DashboardViewProps } from './dashboardTypes';
@@ -10,7 +9,6 @@ import { formatNumber } from '../../utils/format';
 
 export function IdleDashboard({
   commands,
-  environmentData,
   inspections,
   loading,
   onStartProcess,
@@ -34,8 +32,8 @@ export function IdleDashboard({
         />
       </section>
 
-      <section className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <Card className="xl:col-span-2">
+      <section className="grid grid-cols-1 gap-4">
+        <Card>
           <CardHeader className="flex-wrap gap-3">
             <CardTitle>
               <ClipboardCheck className="w-5 h-5 text-brand-success" />
@@ -57,8 +55,6 @@ export function IdleDashboard({
             </div>
           </CardContent>
         </Card>
-
-        <EnvironmentStatusCard environmentData={environmentData} />
       </section>
 
       <CommandHistoryTable commands={commands} />

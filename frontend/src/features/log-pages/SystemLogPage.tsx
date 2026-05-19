@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Terminal, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { apiClient } from '../../api/client';
 import type { ApiResponse, PageResponse, SystemLogResponse } from '../../api/client';
 import { Badge } from '../../components/common/Badge';
@@ -139,7 +140,18 @@ export function SystemLogPage() {
                         {log.source}
                       </button>
                     </td>
-                    <td className="px-5 py-3 whitespace-nowrap text-brand-primary">{log.runId ? `RUN-${log.runId}` : '-'}</td>
+                    <td className="px-5 py-3 whitespace-nowrap">
+                      {log.runId ? (
+                        <Link
+                          to={`/history/${log.runId}`}
+                          className="font-medium text-brand-primary hover:underline"
+                        >
+                          RUN-{log.runId}
+                        </Link>
+                      ) : (
+                        <span className="text-brand-textSub">-</span>
+                      )}
+                    </td>
                     <td className="px-5 py-3 text-brand-textMain">{log.message}</td>
                   </tr>
                 ))}

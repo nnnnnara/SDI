@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, ClipboardCheck, Gauge, PackageSearch, Terminal } from 'lucide-react';
+import { ArrowLeft, ClipboardCheck, PackageSearch, Terminal } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { apiClient } from '../../api/client';
 import type {
   ApiResponse,
-  EnvironmentLogResponse,
   InspectionResponse,
   PageResponse,
   ProcessRunResponse,
@@ -13,7 +12,7 @@ import type {
 import { Badge } from '../../components/common/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/common/Card';
 import { Pagination } from '../../components/common/Pagination';
-import { formatDateTime, formatNumber, formatPercent } from '../../utils/format';
+import { formatDateTime, formatPercent } from '../../utils/format';
 import { defectTypeSummary, inspectionResultClass, inspectionResultLabel } from '../inspection/inspectionUtils';
 import { processStatusDisplay, processStatusVariant, stopReasonDisplay } from './processUtils';
 
@@ -24,11 +23,9 @@ export function ProcessDetailPage() {
   const navigate = useNavigate();
   const { runId } = useParams();
   const [run, setRun] = useState<ProcessRunResponse | null>(null);
-  const [environmentLogs, setEnvironmentLogs] = useState<EnvironmentLogResponse[]>([]);
   const [inspections, setInspections] = useState<InspectionResponse[]>([]);
   const [systemLogs, setSystemLogs] = useState<SystemLogResponse[]>([]);
   const [inspectionPage, setInspectionPage] = useState(0);
-  const [environmentPage, setEnvironmentPage] = useState(0);
   const [systemLogPage, setSystemLogPage] = useState(0);
 
   useEffect(() => {
@@ -36,30 +33,25 @@ export function ProcessDetailPage() {
 
     Promise.all([
       apiClient.get<ApiResponse<ProcessRunResponse>>(`/process/${runId}`),
-      apiClient.get<ApiResponse<EnvironmentLogResponse[]>>(`/process/${runId}/environment`),
       apiClient.get<ApiResponse<InspectionResponse[]>>(`/process/${runId}/inspections`),
       apiClient.get<ApiResponse<PageResponse<SystemLogResponse>>>('/logs/system', {
         params: { page: 0, size: SYSTEM_LOG_LOOKUP_SIZE },
       }),
     ])
-      .then(([runRes, envRes, inspectionRes, systemLogRes]) => {
+      .then(([runRes, inspectionRes, systemLogRes]) => {
         setRun(runRes.data.data || null);
-        setEnvironmentLogs(envRes.data.data || []);
         setInspections(inspectionRes.data.data || []);
         setSystemLogs((systemLogRes.data.data?.content || []).filter((log) => log.runId === Number(runId)));
         setInspectionPage(0);
-        setEnvironmentPage(0);
         setSystemLogPage(0);
       })
       .catch((error) => console.error('Failed to fetch process detail:', error));
   }, [runId]);
 
-  const latestEnvironment = useMemo(() => environmentLogs.at(-1), [environmentLogs]);
   const defectCount = useMemo(() => inspections.reduce((total, item) => total + item.defects.length, 0), [inspections]);
   const badInspectionCount = useMemo(() => inspections.filter((item) => item.result === 'BAD').length, [inspections]);
 
   const visibleInspections = getPageItems(inspections, inspectionPage);
-  const visibleEnvironmentLogs = getPageItems(environmentLogs, environmentPage);
   const visibleSystemLogs = getPageItems(systemLogs, systemLogPage);
 
   const goToInspection = (inspectionId: number) => {
@@ -73,15 +65,15 @@ export function ProcessDetailPage() {
           <Link to="/history" className="inline-flex items-center gap-1 text-sm text-brand-textSub hover:text-brand-primary">
             <ArrowLeft className="w-4 h-4" /> 공정 이력
           </Link>
-          <h1 className="mt-2 text-2xl font-bold text-brand-textMain">RUN-{runId} 공정 리포트</h1>
+          <h1 className="mt-2 text-2xl font-bold text-brand-textMain">RUN-{runId} 공정 상세</h1>
           <p className="mt-1 text-sm text-brand-textSub">
-            하나의 공정에 투입된 제품, 각 제품의 검사 결과, 결함, 환경 로그와 시스템 로그를 함께 확인합니다.
+            하나의 공정에 투입된 제품, 검사 결과, 결함, 시스템 로그를 함께 확인합니다.
           </p>
         </div>
         <Badge variant={processStatusVariant(run?.status)}>{processStatusDisplay(run?.status)}</Badge>
       </div>
 
-      <section className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>공정 정보</CardTitle>
@@ -91,21 +83,7 @@ export function ProcessDetailPage() {
               <InfoItem label="시작 시간" value={formatDateTime(run?.startedAt)} />
               <InfoItem label="종료 시간" value={formatDateTime(run?.endedAt)} />
               <InfoItem label="시작자" value={run?.startedBy?.name ?? '-'} />
-              <InfoItem label="정지 사유" value={stopReasonDisplay(run?.stopReason, run?.status)} />
-            </dl>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle><Gauge className="w-5 h-5 text-brand-info" /> 최근 환경</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <dl className="space-y-3 text-sm">
-              <StatRow label="온도" value={`${formatNumber(latestEnvironment?.temperature)} C`} />
-              <StatRow label="습도" value={`${formatNumber(latestEnvironment?.humidity)}%`} />
-              <StatRow label="PM2.5" value={`${formatNumber(latestEnvironment?.pm25)} ug/m3`} />
-              <StatRow label="PM10" value={`${formatNumber(latestEnvironment?.pm10)} ug/m3`} />
+              <InfoItem label="중지 사유" value={stopReasonDisplay(run?.stopReason, run?.status)} />
             </dl>
           </CardContent>
         </Card>
@@ -114,7 +92,7 @@ export function ProcessDetailPage() {
           <CardHeader>
             <CardTitle><PackageSearch className="w-5 h-5 text-brand-success" /> 제품/검사</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="justify-center">
             <div className="grid grid-cols-3 gap-3 text-center">
               <MetricValue label="제품" value={inspections.length} />
               <MetricValue label="불량" value={badInspectionCount} />
@@ -135,7 +113,7 @@ export function ProcessDetailPage() {
                 <tr>
                   <th className="px-5 py-3 font-medium">제품 S/N</th>
                   <th className="px-5 py-3 font-medium">검사 ID</th>
-                  <th className="px-5 py-3 font-medium">판정</th>
+                  <th className="px-5 py-3 font-medium">결과</th>
                   <th className="px-5 py-3 font-medium">신뢰도</th>
                   <th className="px-5 py-3 font-medium">결함 유형</th>
                   <th className="px-5 py-3 font-medium">결함 수</th>
@@ -166,13 +144,13 @@ export function ProcessDetailPage() {
                     </td>
                     <td className="px-5 py-3 text-brand-textMain">{formatPercent(inspection.confidence)}</td>
                     <td className="px-5 py-3 text-brand-textMain">{defectTypeSummary(inspection.defects)}</td>
-                    <td className="px-5 py-3 text-brand-textSub">{inspection.defects.length.toLocaleString()}건</td>
+                    <td className="px-5 py-3 text-brand-textSub">{inspection.defects.length.toLocaleString()}개</td>
                     <td className="px-5 py-3 text-brand-textSub">{formatDateTime(inspection.inspectedAt)}</td>
                   </tr>
                 ))}
                 {inspections.length === 0 && (
                   <tr>
-                    <td className="px-5 py-8 text-center text-brand-textSub" colSpan={7}>이 공정에 연결된 제품 검사 결과가 없습니다.</td>
+                    <td className="px-5 py-8 text-center text-brand-textSub" colSpan={7}>이 공정에 연결된 검사 결과가 없습니다.</td>
                   </tr>
                 )}
               </tbody>
@@ -184,107 +162,61 @@ export function ProcessDetailPage() {
         </CardContent>
       </Card>
 
-      <section className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
-        <Card>
-          <CardHeader>
-            <CardTitle><Gauge className="w-5 h-5 text-brand-info" /> 공정 환경 로그</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-brand-background/50 text-left text-xs uppercase text-brand-textSub">
-                  <tr>
-                    <th className="px-5 py-3 font-medium">측정 시간</th>
-                    <th className="px-5 py-3 font-medium">온도</th>
-                    <th className="px-5 py-3 font-medium">습도</th>
-                    <th className="px-5 py-3 font-medium">PM2.5</th>
-                    <th className="px-5 py-3 font-medium">PM10</th>
+      <Card>
+        <CardHeader>
+          <CardTitle><Terminal className="w-5 h-5 text-brand-warning" /> 공정 시스템 로그</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <table className="w-full table-fixed text-sm">
+              <thead className="bg-brand-background/50 text-left text-xs uppercase text-brand-textSub">
+                <tr>
+                  <th className="w-[22%] px-5 py-3 font-medium">시간</th>
+                  <th className="w-[14%] px-5 py-3 font-medium">레벨</th>
+                  <th className="w-[18%] px-5 py-3 font-medium">소스</th>
+                  <th className="px-5 py-3 font-medium">메시지</th>
+                </tr>
+              </thead>
+              <tbody>
+                {visibleSystemLogs.map((log) => (
+                  <tr
+                    key={log.logId}
+                    className="cursor-pointer border-t border-brand-border/60 align-middle transition-colors hover:bg-brand-background/60 focus:bg-brand-background/60 focus:outline-none"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => navigate(`/sys-log/${log.logId}`, { state: { log } })}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        navigate(`/sys-log/${log.logId}`, { state: { log } });
+                      }
+                    }}
+                  >
+                    <td className="px-5 py-3 align-middle whitespace-nowrap text-brand-textSub">{formatDateTime(log.createdAt)}</td>
+                    <td className="px-5 py-3 align-middle">
+                      <Badge variant={systemLogVariant(log.level)}>{log.level}</Badge>
+                    </td>
+                    <td className="px-5 py-3 align-middle text-brand-textSub">
+                      <span className="block truncate" title={log.source}>{log.source}</span>
+                    </td>
+                    <td className="px-5 py-3 align-middle">
+                      <span className="block overflow-hidden text-ellipsis whitespace-nowrap text-brand-textMain" title={log.message}>{log.message}</span>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {visibleEnvironmentLogs.map((log, index) => {
-                    const previous = environmentLogs[environmentPage * SECTION_PAGE_SIZE + index - 1];
-
-                    return (
-                      <tr key={log.envLogId} className="border-t border-brand-border/60">
-                        <td className="px-5 py-3 text-brand-textSub">{formatDateTime(log.measuredAt)}</td>
-                        <TrendValue value={log.temperature} previous={previous?.temperature} unit="C" />
-                        <TrendValue value={log.humidity} previous={previous?.humidity} unit="%" />
-                        <TrendValue value={log.pm25} previous={previous?.pm25} unit="ug/m3" />
-                        <TrendValue value={log.pm10} previous={previous?.pm10} unit="ug/m3" />
-                      </tr>
-                    );
-                  })}
-                  {environmentLogs.length === 0 && (
-                    <tr>
-                      <td className="px-5 py-8 text-center text-brand-textSub" colSpan={5}>이 공정에 연결된 환경 로그가 없습니다.</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-            {environmentLogs.length > SECTION_PAGE_SIZE && (
-              <Pagination loading={false} page={environmentPage} pageSize={SECTION_PAGE_SIZE} setPage={setEnvironmentPage} totalPages={getTotalPages(environmentLogs.length)} />
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle><Terminal className="w-5 h-5 text-brand-warning" /> 공정 시스템 로그</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full table-fixed text-sm">
-                <thead className="bg-brand-background/50 text-left text-xs uppercase text-brand-textSub">
+                ))}
+                {systemLogs.length === 0 && (
                   <tr>
-                    <th className="w-[22%] px-5 py-3 font-medium">시간</th>
-                    <th className="w-[14%] px-5 py-3 font-medium">레벨</th>
-                    <th className="w-[18%] px-5 py-3 font-medium">소스</th>
-                    <th className="px-5 py-3 font-medium">메시지</th>
+                    <td className="px-5 py-8 text-center text-brand-textSub" colSpan={4}>이 공정에 연결된 시스템 로그가 없습니다.</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {visibleSystemLogs.map((log) => (
-                    <tr
-                      key={log.logId}
-                      className="cursor-pointer border-t border-brand-border/60 align-middle transition-colors hover:bg-brand-background/60 focus:bg-brand-background/60 focus:outline-none"
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => navigate(`/sys-log/${log.logId}`, { state: { log } })}
-                      onKeyDown={(event) => {
-                        if (event.key === 'Enter' || event.key === ' ') {
-                          event.preventDefault();
-                          navigate(`/sys-log/${log.logId}`, { state: { log } });
-                        }
-                      }}
-                    >
-                      <td className="px-5 py-3 align-middle whitespace-nowrap text-brand-textSub">{formatDateTime(log.createdAt)}</td>
-                      <td className="px-5 py-3 align-middle">
-                        <Badge variant={systemLogVariant(log.level)}>{log.level}</Badge>
-                      </td>
-                      <td className="px-5 py-3 align-middle text-brand-textSub">
-                        <span className="block truncate" title={log.source}>{log.source}</span>
-                      </td>
-                      <td className="px-5 py-3 align-middle">
-                        <span className="block overflow-hidden text-ellipsis whitespace-nowrap text-brand-textMain" title={log.message}>{log.message}</span>
-                      </td>
-                    </tr>
-                  ))}
-                  {systemLogs.length === 0 && (
-                    <tr>
-                      <td className="px-5 py-8 text-center text-brand-textSub" colSpan={4}>이 공정에 연결된 시스템 로그가 없습니다.</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-            {systemLogs.length > SECTION_PAGE_SIZE && (
-              <Pagination loading={false} page={systemLogPage} pageSize={SECTION_PAGE_SIZE} setPage={setSystemLogPage} totalPages={getTotalPages(systemLogs.length)} />
-            )}
-          </CardContent>
-        </Card>
-      </section>
+                )}
+              </tbody>
+            </table>
+          </div>
+          {systemLogs.length > SECTION_PAGE_SIZE && (
+            <Pagination loading={false} page={systemLogPage} pageSize={SECTION_PAGE_SIZE} setPage={setSystemLogPage} totalPages={getTotalPages(systemLogs.length)} />
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -294,15 +226,6 @@ function InfoItem({ label, value }: { label: string; value: string }) {
     <div>
       <dt className="text-brand-textSub">{label}</dt>
       <dd className="mt-1 text-brand-textMain">{value}</dd>
-    </div>
-  );
-}
-
-function StatRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between gap-4">
-      <dt className="text-brand-textSub">{label}</dt>
-      <dd className="text-brand-textMain">{value}</dd>
     </div>
   );
 }
@@ -320,31 +243,6 @@ function systemLogVariant(level: SystemLogResponse['level']) {
   if (level === 'ERROR') return 'danger';
   if (level === 'WARN') return 'warning';
   return 'info';
-}
-
-function TrendValue({ value, previous, unit }: { value?: number | null; previous?: number | null; unit: string }) {
-  const trendInfo = trend(value, previous);
-
-  return (
-    <td className="px-5 py-3 text-brand-textMain">
-      <span className="inline-flex items-center gap-1 whitespace-nowrap">
-        <span>{formatNumber(value)} {unit}</span>
-        {trendInfo && (
-          <span className={`text-xs font-semibold leading-none ${trendInfo.className}`} title={`이전 측정 대비 ${formatNumber(Math.abs(trendInfo.diff))} ${unit}`}>
-            {trendInfo.symbol}
-          </span>
-        )}
-      </span>
-    </td>
-  );
-}
-
-function trend(current?: number | null, previous?: number | null) {
-  if (current === null || current === undefined || previous === null || previous === undefined) return null;
-  const diff = Number(current) - Number(previous);
-  if (Math.abs(diff) < 0.05) return { symbol: '-', className: 'text-brand-textSub', diff };
-  if (diff > 0) return { symbol: '▲', className: 'text-brand-danger', diff };
-  return { symbol: '▼', className: 'text-brand-info', diff };
 }
 
 function getTotalPages(itemCount: number) {

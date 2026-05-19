@@ -37,7 +37,7 @@ export function ProcessControlCard({ isRunning, loading, onStartProcess, onStopP
               </dd>
             </div>
             <div>
-              <dt className="text-brand-textSub">시작 시각</dt>
+              <dt className="text-brand-textSub">시작 시간</dt>
               <dd className="mt-1 text-brand-textMain">{formatDateTime(processStatus?.startedAt)}</dd>
             </div>
             <div>
@@ -93,7 +93,7 @@ export function ProcessControlCard({ isRunning, loading, onStartProcess, onStopP
         )}
 
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-brand-border pt-4">
-          {isRunning && <p className="text-sm text-brand-textSub">카메라와 환경 상태를 우선 확인하세요.</p>}
+          {isRunning && <p className="text-sm text-brand-textSub">카메라 상태를 우선 확인하세요.</p>}
           {processStatus?.runId && (
             <Link
               to={`/history/${processStatus.runId}`}

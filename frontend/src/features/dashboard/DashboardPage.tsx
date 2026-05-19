@@ -4,7 +4,6 @@ import { apiClient } from '../../api/client';
 import type {
   ApiResponse,
   ControlCommandResponse,
-  EnvironmentLogResponse,
   InspectionResponse,
   ProcessRunResponse,
 } from '../../api/client';
@@ -14,7 +13,6 @@ import { RunningDashboard } from './RunningDashboard';
 
 export function DashboardPage() {
   const [processStatus, setProcessStatus] = useState<ProcessRunResponse | null>(null);
-  const [environmentData, setEnvironmentData] = useState<EnvironmentLogResponse | null>(null);
   const [inspections, setInspections] = useState<InspectionResponse[]>([]);
   const [currentProcessInspections, setCurrentProcessInspections] = useState<InspectionResponse[]>([]);
   const [commands, setCommands] = useState<ControlCommandResponse[]>([]);
@@ -27,16 +25,6 @@ export function DashboardPage() {
       return processRes.data.data || null;
     } catch (error) {
       console.error('Failed to fetch current process:', error);
-      return null;
-    }
-  }, []);
-
-  const fetchLatestEnvironment = useCallback(async () => {
-    try {
-      const envRes = await apiClient.get<ApiResponse<EnvironmentLogResponse | null>>('/logs/environment/latest');
-      return envRes.data.data || null;
-    } catch (error) {
-      console.error('Failed to fetch latest environment:', error);
       return null;
     }
   }, []);
@@ -57,9 +45,8 @@ export function DashboardPage() {
     if (showRefreshIndicator) setRefreshing(true);
 
     try {
-      const [process, environment, inspectionRes, latestCommands] = await Promise.all([
+      const [process, inspectionRes, latestCommands] = await Promise.all([
         fetchCurrentProcess(),
-        fetchLatestEnvironment(),
         apiClient.get<ApiResponse<InspectionResponse[]>>('/inspections/recent', { params: { limit: 20 } }),
         fetchRecentCommands(),
       ]);
@@ -68,7 +55,6 @@ export function DashboardPage() {
         : null;
 
       setProcessStatus(process);
-      setEnvironmentData(environment);
       setInspections(inspectionRes.data.data || []);
       setCurrentProcessInspections(currentInspectionRes?.data.data || []);
       setCommands(latestCommands);
@@ -77,7 +63,7 @@ export function DashboardPage() {
     } finally {
       if (showRefreshIndicator) setRefreshing(false);
     }
-  }, [fetchCurrentProcess, fetchLatestEnvironment, fetchRecentCommands]);
+  }, [fetchCurrentProcess, fetchRecentCommands]);
 
   useEffect(() => {
     void loadDashboardData();
@@ -109,7 +95,6 @@ export function DashboardPage() {
   const dashboardProps = {
     commands,
     currentProcessInspections,
-    environmentData,
     inspections,
     loading,
     onStartProcess: startProcess,

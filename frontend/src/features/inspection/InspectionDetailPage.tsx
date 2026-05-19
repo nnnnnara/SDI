@@ -88,7 +88,7 @@ export function InspectionDetailPage() {
           <CardContent>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <EvidenceMetric label="결함 수" value={`${inspection?.defects.length ?? 0}건`} tone={hasDefects ? 'danger' : 'success'} />
-              <EvidenceMetric label="결함 유형" value={defectTypes.length > 0 ? `${defectTypes.length}종` : '-'} tone={hasDefects ? 'warning' : 'default'} />
+              <EvidenceMetric label="결함 유형 수" value={defectTypes.length > 0 ? `${defectTypes.length}개 유형` : '-'} tone={hasDefects ? 'warning' : 'default'} />
               <EvidenceMetric label="신뢰도 구간" value={confidenceLevelLabel(inspection?.confidence)} tone={confidencePercent < 85 ? 'warning' : 'success'} />
             </div>
             <div className="mt-5 rounded-lg border border-brand-border bg-brand-background/40 px-4 py-3 text-sm text-brand-textSub">

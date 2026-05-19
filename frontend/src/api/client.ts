@@ -56,15 +56,6 @@ export interface ControlCommandResponse {
   user?: UserSummaryResponse;
 }
 
-export interface EnvironmentLogResponse {
-  envLogId: number;
-  pm25: number;
-  pm10: number;
-  temperature: number;
-  humidity: number;
-  measuredAt: string;
-}
-
 export interface InspectionDefectResponse {
   defectId: number;
   defectType: string;
