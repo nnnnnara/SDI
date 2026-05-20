@@ -1,7 +1,9 @@
 package com.example.smartfactory.global.sse;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.connector.ClientAbortException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
@@ -57,9 +59,39 @@ public class SseEmitterService {
                     .data(data));
             log.info("SSE event sent. userId={}, event={}", userId, eventType.getEventName());
         } catch (IOException | IllegalStateException e) {
-            log.warn("Failed to send SSE event. userId={}, event={}", userId, eventType.getEventName(), e);
+            if (isClientDisconnected(e)) {
+                log.info("SSE client already disconnected. userId={}, event={}",
+                        userId, eventType.getEventName());
+            } else {
+                log.warn("Failed to send SSE event. userId={}, event={}",
+                        userId, eventType.getEventName(), e);
+            }
             remove(userId, emitter);
         }
+    }
+
+    private boolean isClientDisconnected(Throwable throwable) {
+        Throwable current = throwable;
+
+        while (current != null) {
+            if (current instanceof ClientAbortException
+                    || current instanceof AsyncRequestNotUsableException
+                    || current instanceof java.io.EOFException) {
+                return true;
+            }
+
+            String message = current.getMessage();
+            if (message != null
+                    && (message.contains("Broken pipe")
+                    || message.contains("Connection reset by peer")
+                    || message.contains("ServletOutputStream failed to flush"))) {
+                return true;
+            }
+
+            current = current.getCause();
+        }
+
+        return false;
     }
 
     private void remove(Long userId, SseEmitter emitter) {

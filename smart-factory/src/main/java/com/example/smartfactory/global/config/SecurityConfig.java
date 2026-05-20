@@ -4,6 +4,7 @@ import com.example.smartfactory.global.security.handler.CustomAccessDeniedHandle
 import com.example.smartfactory.global.security.handler.CustomAuthenticationEntryPoint;
 import com.example.smartfactory.global.security.jwt.JwtAuthenticationFilter;
 import com.example.smartfactory.global.security.jwt.JwtProperties;
+import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -48,6 +49,7 @@ public class SecurityConfig {
                         .accessDeniedHandler(accessDeniedHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
+                        .dispatcherTypeMatchers(DispatcherType.ASYNC, DispatcherType.ERROR).permitAll()
                         .requestMatchers(
                                 "/auth/signup",
                                 "/auth/login",

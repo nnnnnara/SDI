@@ -1,6 +1,7 @@
 import type { InspectionDefectResponse, InspectionResponse } from '../../api/client';
 
 const DEFECT_TYPE_LABELS: Record<string, string> = {
+  CELL: 'CELL',
   DENT: '찍힘',
   SCRATCH: '흠집',
   LEAK: '누수',
@@ -8,7 +9,7 @@ const DEFECT_TYPE_LABELS: Record<string, string> = {
   MISPRINT: '각인 불량',
 };
 
-export const FILTERABLE_DEFECT_TYPES = ['DENT', 'SCRATCH', 'LEAK', 'MISASSEMBLY', 'MISPRINT'];
+export const FILTERABLE_DEFECT_TYPES = ['CELL', 'DENT', 'SCRATCH', 'LEAK', 'MISASSEMBLY', 'MISPRINT'];
 
 export function inspectionResultLabel(result?: InspectionResponse['result'] | null) {
   if (result === 'GOOD') return '정상';
