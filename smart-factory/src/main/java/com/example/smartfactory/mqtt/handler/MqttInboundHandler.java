@@ -31,6 +31,8 @@ public class MqttInboundHandler {
         String payload = String.valueOf(message.getPayload());
 
         try {
+            log.info("MQTT message received. topic={}, payload={}", topic, payload);
+
             switch (topic) {
                 case "factory/environment" -> {
                     EnvironmentMessage dto = objectMapper.readValue(payload, EnvironmentMessage.class);
@@ -55,11 +57,19 @@ public class MqttInboundHandler {
             }
         } catch (Exception e) {
             log.error("Failed to process MQTT message. topic={}, payload={}", topic, payload, e);
+            saveMqttErrorLog(topic, e);
+        }
+    }
+
+    private void saveMqttErrorLog(String topic, Exception e) {
+        try {
             systemLogCommandService.error(
                     "MQTT",
                     "Failed to process MQTT message: topic=%s, reason=%s".formatted(topic, e.getMessage()),
                     null
             );
+        } catch (Exception logException) {
+            log.warn("Failed to save MQTT error system log. topic={}", topic, logException);
         }
     }
 }

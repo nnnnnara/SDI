@@ -22,7 +22,7 @@ public class ProcessRun extends BaseEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 20)
+    @Column(name = "status", nullable = false, columnDefinition = "varchar(20)")
     private ProcessStatus status;
 
     @Column(name = "started_at")
@@ -58,7 +58,7 @@ public class ProcessRun extends BaseEntity {
     }
 
     public void stop(String stopReason) {
-        if (this.status != ProcessStatus.RUNNING) {
+        if (isTerminalStatus()) {
             return;
         }
 
@@ -68,7 +68,7 @@ public class ProcessRun extends BaseEntity {
     }
 
     public void complete(String stopReason) {
-        if (this.status != ProcessStatus.RUNNING) {
+        if (isTerminalStatus()) {
             return;
         }
 
@@ -78,6 +78,17 @@ public class ProcessRun extends BaseEntity {
     }
 
     public void markError() {
+        if (isTerminalStatus()) {
+            return;
+        }
+
         this.status = ProcessStatus.ERROR;
+        this.endedAt = LocalDateTime.now();
+    }
+
+    private boolean isTerminalStatus() {
+        return this.status == ProcessStatus.COMPLETED
+                || this.status == ProcessStatus.STOPPED
+                || this.status == ProcessStatus.ERROR;
     }
 }

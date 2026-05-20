@@ -14,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SystemLogCommandService {
 
+    private static final int SOURCE_MAX_LENGTH = 50;
+    private static final int MESSAGE_MAX_LENGTH = 255;
+
     private final SystemLogRepository systemLogRepository;
     private final ProcessRunRepository processRunRepository;
 
@@ -40,8 +43,20 @@ public class SystemLogCommandService {
         systemLogRepository.save(SystemLog.builder()
                 .processRun(processRun)
                 .level(level)
-                .source(source)
-                .message(message)
+                .source(truncate(source, SOURCE_MAX_LENGTH))
+                .message(truncate(message, MESSAGE_MAX_LENGTH))
                 .build());
+    }
+
+    private String truncate(String value, int maxLength) {
+        if (value == null) {
+            return "";
+        }
+
+        if (value.length() <= maxLength) {
+            return value;
+        }
+
+        return value.substring(0, maxLength);
     }
 }
