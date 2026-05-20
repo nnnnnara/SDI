@@ -20,7 +20,7 @@ public class JetsonClient {
     public void sendCommand(Long runId, CommandType commandType) {
 
         webClient.post()
-                .uri(jetsonBaseUrl + "/process")
+                .uri(jetsonBaseUrl + "/process/start")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new JetsonProcessCommandRequest(
                         runId,
