@@ -21,6 +21,7 @@ public class StatusMqttService {
     private final SystemLogCommandService systemLogCommandService;
 
     private static final String NORMAL_COMPLETE = "NORMAL_COMPLETE";
+    private static final String USER_STOP = "USER_STOP";
 
     @Transactional
     public void handle(StatusMessage message) {
@@ -34,8 +35,10 @@ public class StatusMqttService {
     }
 
     private void updateProcessStatus(ProcessRun processRun, ProcessStatus status) {
-        if (status == ProcessStatus.STOPPED) {
-            processRun.stop(NORMAL_COMPLETE);
+        if (status == ProcessStatus.COMPLETED) {
+            processRun.complete(NORMAL_COMPLETE);
+        } else if (status == ProcessStatus.STOPPED) {
+            processRun.stop(USER_STOP);
         } else if (status == ProcessStatus.ERROR) {
             processRun.markError();
         } else {
@@ -50,10 +53,16 @@ public class StatusMqttService {
                     "Process status changed to ERROR: runId=%d".formatted(message.runId()),
                     message.runId()
             );
+        } else if (message.status() == ProcessStatus.COMPLETED) {
+            systemLogCommandService.info(
+                    "PROCESS",
+                    "Process completed: runId=%d".formatted(message.runId()),
+                    message.runId()
+            );
         } else if (message.status() == ProcessStatus.STOPPED) {
             systemLogCommandService.info(
                     "PROCESS",
-                    "Process stopped: runId=%d".formatted(message.runId()),
+                    "Process stopped by user: runId=%d".formatted(message.runId()),
                     message.runId()
             );
         }
