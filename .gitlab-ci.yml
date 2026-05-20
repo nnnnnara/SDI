@@ -58,6 +58,7 @@ deploy:
           environment: factory/environment
           inspection: factory/inspection
           status: factory/status
+          command: factory/command
       EOF
 
     # docker-compose용 .env 생성
