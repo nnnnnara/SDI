@@ -45,11 +45,32 @@ public class InspectionMqttService {
 
     @Transactional
     public void handle(InspectionMessage message) {
+        log.info("Start handling inspection message. runId={}, serialNo={}, result={}, confidence={}, inspectedAt={}",
+                message.runId(), message.serialNo(), message.result(), message.confidence(), message.inspectedAt());
+
         DecodedImage rawImage = decodeImage(firstPresent(message.rawImageBase64(), message.rawImageUrl()));
         DecodedImage resultImage = decodeImage(firstPresent(message.resultImageBase64(), message.resultImageUrl()));
 
+        log.info("Inspection image decode result. runId={}, serialNo={}, rawImageSource={}, rawImageDecoded={}, "
+                        + "rawImageContentType={}, rawImageBytes={}, resultImageSource={}, resultImageDecoded={}, "
+                        + "resultImageContentType={}, resultImageBytes={}",
+                message.runId(),
+                message.serialNo(),
+                imageSource(message.rawImageBase64(), message.rawImageUrl()),
+                rawImage != null,
+                rawImage == null ? null : rawImage.contentType(),
+                rawImage == null ? null : rawImage.data().length,
+                imageSource(message.resultImageBase64(), message.resultImageUrl()),
+                resultImage != null,
+                resultImage == null ? null : resultImage.contentType(),
+                resultImage == null ? null : resultImage.data().length);
+
         ProcessRun processRun = processRunRepository.findById(message.runId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.PROCESS_RUN_NOT_FOUND));
+                .orElseThrow(() -> {
+                    log.warn("Inspection message references missing process run. runId={}, serialNo={}",
+                            message.runId(), message.serialNo());
+                    return new BusinessException(ErrorCode.PROCESS_RUN_NOT_FOUND);
+                });
 
         Product product = productRepository.findBySerialNo(message.serialNo())
                 .orElseGet(() -> productRepository.save(
@@ -59,6 +80,9 @@ public class InspectionMqttService {
                                 .inputAt(message.inspectedAt())
                                 .build()
                 ));
+
+        log.info("Inspection target resolved. runId={}, processRunStatus={}, productId={}, serialNo={}",
+                processRun.getId(), processRun.getStatus(), product.getId(), product.getSerialNo());
 
         Inspection inspection = Inspection.builder()
                 .product(product)
@@ -74,10 +98,30 @@ public class InspectionMqttService {
                 .build();
 
         Inspection savedInspection = inspectionRepository.save(inspection);
+        log.info("Inspection entity saved. inspectionId={}, runId={}, serialNo={}, result={}, rawImageStored={}, resultImageStored={}",
+                savedInspection.getId(),
+                message.runId(),
+                message.serialNo(),
+                savedInspection.getResult(),
+                savedInspection.getRawImageData() != null && savedInspection.getRawImageData().length > 0,
+                savedInspection.getResultImageData() != null && savedInspection.getResultImageData().length > 0);
 
         List<InspectionDefect> defects = new ArrayList<>();
         if (message.defects() != null) {
-            for (DefectMessage defectMessage : message.defects()) {
+            for (int i = 0; i < message.defects().size(); i++) {
+                DefectMessage defectMessage = message.defects().get(i);
+                log.info("Inspection defect received. index={}, runId={}, serialNo={}, defectType={}, confidence={}, "
+                                + "bboxX={}, bboxY={}, bboxW={}, bboxH={}",
+                        i,
+                        message.runId(),
+                        message.serialNo(),
+                        defectMessage.defectType(),
+                        defectMessage.confidence(),
+                        defectMessage.bboxX(),
+                        defectMessage.bboxY(),
+                        defectMessage.bboxW(),
+                        defectMessage.bboxH());
+
                 InspectionDefect defect = InspectionDefect.builder()
                         .inspection(savedInspection)
                         .defectType(defectMessage.defectType())
@@ -93,6 +137,7 @@ public class InspectionMqttService {
 
         if (!defects.isEmpty()) {
             inspectionDefectRepository.saveAll(defects);
+            log.info("Inspection defects saved. inspectionId={}, defectCount={}", savedInspection.getId(), defects.size());
         }
 
         if (message.result() == InspectionResult.BAD) {
@@ -105,8 +150,8 @@ public class InspectionMqttService {
 
         sendInspectionEventAfterCommit(processRun, message, defects.size());
 
-        log.info("Inspection result saved. runId={}, serialNo={}, defectCount={}",
-                message.runId(), message.serialNo(), defects.size());
+        log.info("Inspection result handling completed. inspectionId={}, runId={}, serialNo={}, defectCount={}",
+                savedInspection.getId(), message.runId(), message.serialNo(), defects.size());
     }
 
     private void sendInspectionEvent(ProcessRun processRun, InspectionMessage message, int defectCount) {
@@ -190,9 +235,29 @@ public class InspectionMqttService {
         try {
             return new DecodedImage(Base64.getMimeDecoder().decode(base64), contentType);
         } catch (IllegalArgumentException e) {
-            log.warn("Invalid base64 inspection image received.");
+            log.warn("Invalid base64 inspection image received. length={}, preview={}",
+                    value.length(), preview(value));
             return null;
         }
+    }
+
+    private static String imageSource(String base64, String url) {
+        if (hasText(base64)) {
+            return "base64(length=%d, preview=%s)".formatted(base64.length(), preview(base64));
+        }
+        if (hasText(url)) {
+            return "url(%s)".formatted(url);
+        }
+        return "empty";
+    }
+
+    private static String preview(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        String compact = value.replaceAll("\\s+", "");
+        return compact.substring(0, Math.min(compact.length(), 80));
     }
 
     private static boolean looksLikeBase64Image(String value) {
