@@ -1,4 +1,5 @@
 import { ClipboardCheck } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/common/Card';
 import { InspectionSummary } from './components/InspectionSummary';
 import { ProcessControlCard } from './components/ProcessControlCard';
@@ -35,9 +36,14 @@ export function RunningDashboard({
             </CardTitle>
             <span className="text-xs text-brand-textSub">현재 RUN 기준</span>
           </CardHeader>
-          <CardContent>
+          <CardContent className={latestCurrentInspection ? 'p-0' : undefined}>
             {latestCurrentInspection ? (
-              <InspectionSummary inspection={latestCurrentInspection} />
+              <Link
+                to={`/inspection/${latestCurrentInspection.inspectionId}`}
+                className="block cursor-pointer px-5 py-5 transition-colors hover:bg-brand-background/60 focus:bg-brand-background/60 focus:outline-none"
+              >
+                <InspectionSummary inspection={latestCurrentInspection} />
+              </Link>
             ) : (
               <p className="text-sm text-brand-textSub">현재 공정의 검사 결과가 존재하지 않습니다.</p>
             )}

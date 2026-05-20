@@ -1,26 +1,58 @@
 import type { InspectionResponse } from '../../../api/client';
 import { formatDateTime, formatPercent } from '../../../utils/format';
-import { inspectionResultClass, inspectionResultLabel } from '../../inspection/inspectionUtils';
+import {
+  confidenceClass,
+  defectTypeLabel,
+  inspectionResultClass,
+  inspectionResultLabel,
+  uniqueDefectTypes,
+} from '../../inspection/inspectionUtils';
 
 export function InspectionSummary({ inspection }: { inspection: InspectionResponse }) {
+  const defectTypes = uniqueDefectTypes(inspection.defects);
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <span className="font-mono text-lg font-semibold text-brand-textMain">{inspection.serialNo}</span>
+    <div className="grid grid-cols-1 gap-3 text-sm lg:grid-cols-[90px_minmax(180px,1.2fr)_110px_100px_minmax(160px,1fr)_90px_170px] lg:items-center">
+      <div>
+        <div className="mb-1 text-xs text-brand-textSub lg:hidden">검사 ID</div>
+        <div className="font-mono text-brand-textMain">{inspection.inspectionId}</div>
+      </div>
+      <div>
+        <div className="mb-1 text-xs text-brand-textSub lg:hidden">S/N</div>
+        <div className="text-brand-textSub">{inspection.serialNo}</div>
+      </div>
+      <div>
+        <div className="mb-1 text-xs text-brand-textSub lg:hidden">AI 판정</div>
         <span className={`inline-flex min-w-14 justify-center rounded-md border px-2.5 py-1 text-xs font-bold ${inspectionResultClass(inspection.result)}`}>
           {inspectionResultLabel(inspection.result)}
         </span>
       </div>
-      <dl className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
-        <div className="flex justify-between gap-4">
-          <dt className="whitespace-nowrap text-brand-textSub">검사 시각</dt>
-          <dd className="text-brand-textMain">{formatDateTime(inspection.inspectedAt)}</dd>
-        </div>
-        <div className="flex justify-between gap-4">
-          <dt className="whitespace-nowrap text-brand-textSub">신뢰도</dt>
-          <dd className="text-brand-textMain">{formatPercent(inspection.confidence)}</dd>
-        </div>
-      </dl>
+      <div>
+        <div className="mb-1 text-xs text-brand-textSub lg:hidden">신뢰도</div>
+        <span className={`font-semibold ${confidenceClass(inspection.confidence)}`}>{formatPercent(inspection.confidence)}</span>
+      </div>
+      <div>
+        <div className="mb-1 text-xs text-brand-textSub lg:hidden">결함 유형</div>
+        {defectTypes.length === 0 ? (
+          <span className="text-brand-textSub">-</span>
+        ) : (
+          <div className="flex flex-wrap gap-1.5">
+            {defectTypes.map((defectType) => (
+              <span key={defectType} className="rounded-md border border-brand-border px-2 py-1 text-xs font-medium text-brand-textSub">
+                {defectTypeLabel(defectType)}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+      <div>
+        <div className="mb-1 text-xs text-brand-textSub lg:hidden">결함 수</div>
+        <div className="text-brand-textSub">{inspection.defects.length.toLocaleString()}건</div>
+      </div>
+      <div>
+        <div className="mb-1 text-xs text-brand-textSub lg:hidden">검사 시각</div>
+        <div className="text-brand-textSub">{formatDateTime(inspection.inspectedAt)}</div>
+      </div>
     </div>
   );
 }
