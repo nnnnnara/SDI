@@ -51,6 +51,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/auth/signup",
                                 "/auth/login",
+                                "/device/inspections",
+                                "/device/status",
                                 "/inspections/*/images/*"
                         ).permitAll()
                         .anyRequest().authenticated()
