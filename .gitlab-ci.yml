@@ -44,6 +44,9 @@ deploy:
         access-token-ttl: PT30M
         header: Authorization
         prefix: "Bearer "
+        
+      jetson:
+        base-url: http://nginx/jetson/api
 
       mqtt:
         broker-url: tcp://mqtt:1883
@@ -55,7 +58,6 @@ deploy:
           environment: factory/environment
           inspection: factory/inspection
           status: factory/status
-          command: factory/command
       EOF
 
     # docker-compose용 .env 생성

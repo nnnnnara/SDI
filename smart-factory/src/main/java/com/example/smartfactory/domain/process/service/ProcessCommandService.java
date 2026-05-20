@@ -13,7 +13,7 @@ import com.example.smartfactory.domain.process.repository.ControlCommandReposito
 import com.example.smartfactory.domain.process.repository.ProcessRunRepository;
 import com.example.smartfactory.global.exception.BusinessException;
 import com.example.smartfactory.global.exception.ErrorCode;
-import com.example.smartfactory.mqtt.publisher.MqttCommandPublisher;
+import com.example.smartfactory.global.jetson.JetsonClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +26,7 @@ public class ProcessCommandService {
     private final ProcessRunRepository processRunRepository;
     private final ControlCommandRepository controlCommandRepository;
 
-    private final MqttCommandPublisher mqttCommandPublisher;
+    private final JetsonClient jetsonClient;
 
     @Transactional
     public ProcessRunResponse start(Long userId) {
@@ -43,7 +43,7 @@ public class ProcessCommandService {
         ProcessRun saved = processRunRepository.save(processRun);
         ControlCommand command = saveCommand(saved, user, CommandType.START);
 
-        mqttCommandPublisher.publishStart(saved.getId());
+        jetsonClient.sendCommand(saved.getId(), CommandType.START);
         command.markSent();
 
         return ProcessRunResponse.from(saved);
@@ -65,7 +65,7 @@ public class ProcessCommandService {
         processRun.stop(request.stopReason());
         ControlCommand command = saveCommand(processRun, user, CommandType.STOP);
 
-        mqttCommandPublisher.publishStop(processRun.getId());
+        jetsonClient.sendCommand(processRun.getId(), CommandType.STOP);
         command.markSent();
 
         return ProcessRunResponse.from(processRun);
