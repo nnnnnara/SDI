@@ -3,7 +3,7 @@ import type { InspectionResponse } from '../../api/client';
 export type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'default';
 
 export function statusVariant(status?: string | null): BadgeVariant {
-  if (status === 'RUNNING' || status === 'SUCCESS') return 'success';
+  if (status === 'RUNNING' || status === 'COMPLETED' || status === 'SUCCESS') return 'success';
   if (status === 'SENT') return 'info';
   if (status === 'ERROR' || status === 'FAILED') return 'danger';
   if (status === 'STOPPED' || status === 'REQUESTED') return 'warning';

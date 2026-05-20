@@ -9,6 +9,18 @@ export const apiClient = axios.create({
   },
 });
 
+export function createApiUrl(path: string) {
+  const baseURL = apiClient.defaults.baseURL || '/api';
+  const normalizedPath = path.startsWith('/') ? path.slice(1) : path;
+
+  if (baseURL.startsWith('http://') || baseURL.startsWith('https://')) {
+    const normalizedBase = baseURL.endsWith('/') ? baseURL : `${baseURL}/`;
+    return new URL(normalizedPath, normalizedBase).toString();
+  }
+
+  return `${baseURL.replace(/\/$/, '')}/${normalizedPath}`;
+}
+
 apiClient.interceptors.request.use((config) => {
   const token = sessionStorage.getItem('accessToken');
   if (token && config.headers) {
@@ -39,7 +51,7 @@ export interface UserSummaryResponse {
 
 export interface ProcessRunResponse {
   runId: number;
-  status: 'READY' | 'RUNNING' | 'STOPPED' | 'ERROR';
+  status: 'READY' | 'RUNNING' | 'COMPLETED' | 'STOPPED' | 'ERROR';
   startedAt: string;
   endedAt?: string;
   stopReason?: string;
