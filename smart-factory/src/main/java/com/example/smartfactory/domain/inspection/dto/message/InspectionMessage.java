@@ -13,6 +13,8 @@ public record InspectionMessage(
         BigDecimal confidence,
         String rawImageUrl,
         String resultImageUrl,
+        String rawImageBase64,
+        String resultImageBase64,
         List<DefectMessage> defects,
         LocalDateTime inspectedAt
 ) {}

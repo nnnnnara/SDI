@@ -43,6 +43,18 @@ public class Inspection extends BaseEntity {
     @Column(name = "result_image_url", length = 255)
     private String resultImageUrl;
 
+    @Column(name = "raw_image_data", columnDefinition = "bytea")
+    private byte[] rawImageData;
+
+    @Column(name = "raw_image_content_type", length = 50)
+    private String rawImageContentType;
+
+    @Column(name = "result_image_data", columnDefinition = "bytea")
+    private byte[] resultImageData;
+
+    @Column(name = "result_image_content_type", length = 50)
+    private String resultImageContentType;
+
     @Column(name = "inspected_at", nullable = false)
     private LocalDateTime inspectedAt;
 
@@ -60,6 +72,10 @@ public class Inspection extends BaseEntity {
             BigDecimal confidence,
             String rawImageUrl,
             String resultImageUrl,
+            byte[] rawImageData,
+            String rawImageContentType,
+            byte[] resultImageData,
+            String resultImageContentType,
             LocalDateTime inspectedAt
     ) {
         this.product = product;
@@ -67,6 +83,10 @@ public class Inspection extends BaseEntity {
         this.confidence = confidence;
         this.rawImageUrl = rawImageUrl;
         this.resultImageUrl = resultImageUrl;
+        this.rawImageData = rawImageData;
+        this.rawImageContentType = rawImageContentType;
+        this.resultImageData = resultImageData;
+        this.resultImageContentType = resultImageContentType;
         this.inspectedAt = inspectedAt;
     }
 

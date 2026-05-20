@@ -19,16 +19,30 @@ public record InspectionResponse(
 
     public static InspectionResponse from(Inspection inspection) {
         return new InspectionResponse(
-                inspection.getId(),
-                inspection.getProduct().getSerialNo(),
-                inspection.getResult().name(),
-                inspection.getConfidence(),
-                inspection.getRawImageUrl(),
-                inspection.getResultImageUrl(),
-                inspection.getInspectedAt(),
-                inspection.getDefects().stream()
-                        .map(InspectionDefectResponse::from)
-                        .toList()
+                        inspection.getId(),
+                        inspection.getProduct().getSerialNo(),
+                        inspection.getResult().name(),
+                        inspection.getConfidence(),
+                        imageUrl(inspection, "raw"),
+                        imageUrl(inspection, "result"),
+                        inspection.getInspectedAt(),
+                        inspection.getDefects().stream()
+                                .map(InspectionDefectResponse::from)
+                                .toList()
         );
+    }
+
+    private static String imageUrl(Inspection inspection, String imageType) {
+        boolean hasStoredImage = "raw".equals(imageType)
+                ? inspection.getRawImageData() != null && inspection.getRawImageData().length > 0
+                : inspection.getResultImageData() != null && inspection.getResultImageData().length > 0;
+
+        if (hasStoredImage) {
+            return "/api/inspections/%d/images/%s".formatted(inspection.getId(), imageType);
+        }
+
+        return "raw".equals(imageType)
+                ? inspection.getRawImageUrl()
+                : inspection.getResultImageUrl();
     }
 }

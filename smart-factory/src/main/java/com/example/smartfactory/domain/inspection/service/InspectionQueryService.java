@@ -25,6 +25,29 @@ public class InspectionQueryService {
 
     private final InspectionRepository inspectionRepository;
 
+    public InspectionImage getInspectionImage(Long inspectionId, String imageType) {
+        Inspection inspection = inspectionRepository.findById(inspectionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INSPECTION_NOT_FOUND));
+
+        byte[] imageData;
+        String contentType;
+        if ("raw".equals(imageType)) {
+            imageData = inspection.getRawImageData();
+            contentType = inspection.getRawImageContentType();
+        } else if ("result".equals(imageType)) {
+            imageData = inspection.getResultImageData();
+            contentType = inspection.getResultImageContentType();
+        } else {
+            throw new BusinessException(ErrorCode.INVALID_REQUEST);
+        }
+
+        if (imageData == null || imageData.length == 0) {
+            throw new BusinessException(ErrorCode.INSPECTION_NOT_FOUND);
+        }
+
+        return new InspectionImage(imageData, contentType != null ? contentType : "image/jpeg");
+    }
+
     public InspectionResponse getInspection(Long userId, Long inspectionId) {
         Inspection inspection = inspectionRepository.findDetailByIdAndUserId(inspectionId, userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INSPECTION_NOT_FOUND));
@@ -65,5 +88,8 @@ public class InspectionQueryService {
         return inspectionIds.stream()
                 .map(inspectionsById::get)
                 .toList();
+    }
+
+    public record InspectionImage(byte[] data, String contentType) {
     }
 }
