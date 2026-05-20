@@ -8,6 +8,8 @@ const DEFECT_TYPE_LABELS: Record<string, string> = {
   MISPRINT: '각인 불량',
 };
 
+export const FILTERABLE_DEFECT_TYPES = ['DENT', 'SCRATCH', 'LEAK', 'MISASSEMBLY', 'MISPRINT'];
+
 export function inspectionResultLabel(result?: InspectionResponse['result'] | null) {
   if (result === 'GOOD') return '정상';
   if (result === 'BAD') return '불량';
@@ -47,5 +49,5 @@ export function defectTypeSummary(defects: InspectionDefectResponse[] = []) {
   const types = uniqueDefectTypes(defects).map(defectTypeLabel);
   if (types.length === 0) return '-';
   if (types.length <= 2) return types.join(', ');
-  return `${types.slice(0, 2).join(', ')} 외 ${types.length - 2}종`;
+  return `${types.slice(0, 2).join(', ')} 외 ${types.length - 2}개`;
 }

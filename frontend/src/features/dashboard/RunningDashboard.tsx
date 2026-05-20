@@ -1,13 +1,11 @@
 import { ClipboardCheck } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/common/Card';
-import { CommandHistoryTable } from './components/CommandHistoryTable';
 import { InspectionSummary } from './components/InspectionSummary';
 import { ProcessControlCard } from './components/ProcessControlCard';
 import type { DashboardViewProps } from './dashboardTypes';
 import { latestByInspectedAt } from './dashboardUtils';
 
 export function RunningDashboard({
-  commands,
   currentProcessInspections,
   loading,
   onStartProcess,
@@ -47,7 +45,6 @@ export function RunningDashboard({
         </Card>
       </section>
 
-      <CommandHistoryTable commands={commands} />
     </>
   );
 }

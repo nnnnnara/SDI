@@ -1,6 +1,5 @@
 import { ClipboardCheck } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/common/Card';
-import { CommandHistoryTable } from './components/CommandHistoryTable';
 import { InspectionTable } from './components/InspectionTable';
 import { ProcessControlCard } from './components/ProcessControlCard';
 import type { DashboardViewProps } from './dashboardTypes';
@@ -8,7 +7,6 @@ import { defectRateClass } from './dashboardUtils';
 import { formatNumber } from '../../utils/format';
 
 export function IdleDashboard({
-  commands,
   inspections,
   loading,
   onStartProcess,
@@ -57,7 +55,6 @@ export function IdleDashboard({
         </Card>
       </section>
 
-      <CommandHistoryTable commands={commands} />
     </>
   );
 }

@@ -1,13 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Camera, ClipboardList, History, LayoutDashboard, Settings, Terminal } from 'lucide-react';
+import { Camera, ClipboardList, History, LayoutDashboard, Terminal } from 'lucide-react';
 import logoUrl from '../../assets/sdi_logo.png';
 
 const MENU_ITEMS = [
-  { id: 'dashboard', path: '/dashboard', label: '대시보드', icon: LayoutDashboard },
+  { id: 'dashboard', path: '/dashboard', label: '공정 대시보드', icon: LayoutDashboard },
   { id: 'history', path: '/history', label: '공정 이력', icon: History },
   { id: 'inspection', path: '/inspection', label: '검사 결과', icon: ClipboardList },
   { id: 'sys-log', path: '/sys-log', label: '시스템 로그', icon: Terminal },
-  { id: 'camera', path: '/camera', label: '카메라 스트림', icon: Camera },
+  { id: 'camera', path: '/camera', label: '카메라', icon: Camera },
 ];
 
 export function Sidebar() {
@@ -17,7 +17,7 @@ export function Sidebar() {
     <aside className="w-64 bg-brand-card border-r border-brand-border h-screen flex flex-col shrink-0">
       <Link
         to="/dashboard"
-        aria-label="대시보드로 이동"
+        aria-label="공정 대시보드로 이동"
         className="h-16 flex items-center px-6 border-b border-brand-border transition-colors hover:bg-brand-border/20 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-primary/40"
       >
         <img src={logoUrl} alt="SDI Logo" className="w-8 h-8 mr-3 object-contain rounded" />
@@ -45,13 +45,6 @@ export function Sidebar() {
           );
         })}
       </nav>
-
-      <div className="p-4 border-t border-brand-border">
-        <button className="w-full flex items-center px-3 py-3 rounded-lg text-brand-textSub hover:bg-brand-border/30 hover:text-brand-textMain transition-colors duration-200">
-          <Settings className="w-5 h-5 mr-3" />
-          <span className="font-medium">설정</span>
-        </button>
-      </div>
     </aside>
   );
 }

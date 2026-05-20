@@ -59,6 +59,11 @@ export function SystemLogPage() {
     void fetchLogs();
   }, [fetchLogs]);
 
+  const availableSources = useMemo(
+    () => Array.from(new Set(logs.map((log) => log.source).filter(Boolean))).sort(),
+    [logs]
+  );
+
   const visibleLogs = useMemo(
     () => logs.filter((log) => (!selectedSource || log.source === selectedSource) && (!selectedLevel || log.level === selectedLevel)),
     [logs, selectedLevel, selectedSource]
@@ -107,6 +112,25 @@ export function SystemLogPage() {
             <span>{currentPage.toLocaleString()} / {totalPages.toLocaleString()} 페이지</span>
           </div>
         </CardHeader>
+        {availableSources.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2 border-b border-brand-border px-5 py-3 text-xs">
+            <span className="font-medium text-brand-textSub">소스</span>
+            {availableSources.map((source) => (
+              <button
+                key={source}
+                type="button"
+                onClick={() => setSelectedSource(source)}
+                className={`rounded-md border px-2.5 py-1 font-medium transition-colors ${
+                  selectedSource === source
+                    ? 'border-brand-primary/50 bg-brand-primary/10 text-brand-primary'
+                    : 'border-brand-border text-brand-textSub hover:border-brand-primary/50 hover:text-brand-primary'
+                }`}
+              >
+                {source}
+              </button>
+            ))}
+          </div>
+        )}
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">

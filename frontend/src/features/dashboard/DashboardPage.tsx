@@ -3,13 +3,13 @@ import { AlertTriangle, CheckCircle2, RefreshCw, X, XCircle } from 'lucide-react
 import { apiClient, createApiUrl } from '../../api/client';
 import type {
   ApiResponse,
-  ControlCommandResponse,
   InspectionResponse,
   ProcessRunResponse,
 } from '../../api/client';
 import { PageHeader } from '../../components/common/PageHeader';
 import { IdleDashboard } from './IdleDashboard';
 import { RunningDashboard } from './RunningDashboard';
+import { dispatchDashboardNotification } from './dashboardNotifications';
 
 type RealtimeToastTone = 'success' | 'warning' | 'danger' | 'info';
 
@@ -45,19 +45,19 @@ export function DashboardPage() {
   const [processStatus, setProcessStatus] = useState<ProcessRunResponse | null>(null);
   const [inspections, setInspections] = useState<InspectionResponse[]>([]);
   const [currentProcessInspections, setCurrentProcessInspections] = useState<InspectionResponse[]>([]);
-  const [commands, setCommands] = useState<ControlCommandResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [toasts, setToasts] = useState<RealtimeToast[]>([]);
   const toastIdRef = useRef(0);
 
-  const pushToast = useCallback((toast: Omit<RealtimeToast, 'id'>) => {
+  const pushNotification = useCallback((notification: Omit<RealtimeToast, 'id'>) => {
     const id = ++toastIdRef.current;
 
-    setToasts((current) => [{ id, ...toast }, ...current].slice(0, 4));
+    dispatchDashboardNotification(notification);
+    setToasts((current) => [{ id, ...notification }, ...current].slice(0, 4));
     window.setTimeout(() => {
       setToasts((current) => current.filter((item) => item.id !== id));
-    }, toast.tone === 'info' ? 3500 : 6500);
+    }, notification.tone === 'info' ? 3500 : 6500);
   }, []);
 
   const removeToast = useCallback((id: number) => {
@@ -74,26 +74,13 @@ export function DashboardPage() {
     }
   }, []);
 
-  const fetchRecentCommands = useCallback(async () => {
-    try {
-      const commandRes = await apiClient.get<ApiResponse<ControlCommandResponse[]>>('/commands/recent', {
-        params: { limit: 8 },
-      });
-      return commandRes.data.data || [];
-    } catch (error) {
-      console.error('Failed to fetch control commands:', error);
-      return [];
-    }
-  }, []);
-
   const loadDashboardData = useCallback(async (showRefreshIndicator = false) => {
     if (showRefreshIndicator) setRefreshing(true);
 
     try {
-      const [process, inspectionRes, latestCommands] = await Promise.all([
+      const [process, inspectionRes] = await Promise.all([
         fetchCurrentProcess(),
         apiClient.get<ApiResponse<InspectionResponse[]>>('/inspections/recent', { params: { limit: 20 } }),
-        fetchRecentCommands(),
       ]);
       const currentInspectionRes = process?.runId
         ? await apiClient.get<ApiResponse<InspectionResponse[]>>(`/process/${process.runId}/inspections`)
@@ -102,13 +89,12 @@ export function DashboardPage() {
       setProcessStatus(process);
       setInspections(inspectionRes.data.data || []);
       setCurrentProcessInspections(currentInspectionRes?.data.data || []);
-      setCommands(latestCommands);
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
     } finally {
       if (showRefreshIndicator) setRefreshing(false);
     }
-  }, [fetchCurrentProcess, fetchRecentCommands]);
+  }, [fetchCurrentProcess]);
 
   const handleProcessStatusEvent = useCallback((event: ProcessStatusEvent) => {
     if (event.status === 'COMPLETED' || event.status === 'STOPPED' || event.status === 'ERROR') {
@@ -121,7 +107,7 @@ export function DashboardPage() {
     }, 300);
 
     if (event.status === 'COMPLETED') {
-      pushToast({
+      pushNotification({
         title: '\uacf5\uc815 \uc644\ub8cc',
         message: event.message || '\uacf5\uc815\uc774 \uc644\ub8cc\ub418\uc5c8\uc2b5\ub2c8\ub2e4.',
         detail: `RUN-${event.runId}`,
@@ -131,7 +117,7 @@ export function DashboardPage() {
     }
 
     if (event.status === 'STOPPED') {
-      pushToast({
+      pushNotification({
         title: '\uacf5\uc815 \uc911\ub2e8',
         message: event.message || '\uc0ac\uc6a9\uc790\uc5d0 \uc758\ud574 \uacf5\uc815\uc774 \uc911\ub2e8\ub418\uc5c8\uc2b5\ub2c8\ub2e4.',
         detail: `RUN-${event.runId}`,
@@ -141,20 +127,20 @@ export function DashboardPage() {
     }
 
     if (event.status === 'ERROR') {
-      pushToast({
+      pushNotification({
         title: '\uacf5\uc815 \uc624\ub958',
         message: event.message || '\uacf5\uc815 \uc624\ub958\uac00 \ubc1c\uc0dd\ud588\uc2b5\ub2c8\ub2e4.',
         detail: `RUN-${event.runId}`,
         tone: 'danger',
       });
     }
-  }, [loadDashboardData, pushToast]);
+  }, [loadDashboardData, pushNotification]);
 
   const handleInspectionCreatedEvent = useCallback((event: InspectionCreatedEvent) => {
     void loadDashboardData();
 
     if (event.result === 'BAD') {
-      pushToast({
+      pushNotification({
         title: '\ubd88\ub7c9 \uac10\uc9c0',
         message: event.message || '\ubd88\ub7c9\uc774 \uac10\uc9c0\ub418\uc5c8\uc2b5\ub2c8\ub2e4.',
         detail: `${event.serialNo} · ${event.defectCount}\uac1c \uacb0\ud568`,
@@ -163,13 +149,13 @@ export function DashboardPage() {
       return;
     }
 
-    pushToast({
+    pushNotification({
       title: '\uac80\uc0ac \uc644\ub8cc',
       message: event.serialNo,
       detail: event.confidence != null ? `confidence ${(event.confidence * 100).toFixed(1)}%` : undefined,
       tone: 'info',
     });
-  }, [loadDashboardData, pushToast]);
+  }, [loadDashboardData, pushNotification]);
 
   const handleSseMessage = useCallback((message: SseMessage) => {
     if (!message.data) return;
@@ -223,7 +209,6 @@ export function DashboardPage() {
 
   const isRunning = processStatus?.status === 'RUNNING';
   const dashboardProps = {
-    commands,
     currentProcessInspections,
     inspections,
     loading,
