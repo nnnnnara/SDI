@@ -1,9 +1,11 @@
 package com.example.smartfactory.domain.inspection.dto.response;
 
 import com.example.smartfactory.domain.inspection.entity.Inspection;
+import com.example.smartfactory.domain.inspection.entity.InspectionDefect;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 public record InspectionResponse(
@@ -22,7 +24,7 @@ public record InspectionResponse(
                         inspection.getId(),
                         inspection.getProduct().getSerialNo(),
                         inspection.getResult().name(),
-                        inspection.getConfidence(),
+                        representativeConfidence(inspection),
                         imageUrl(inspection, "raw"),
                         imageUrl(inspection, "result"),
                         inspection.getInspectedAt(),
@@ -44,5 +46,13 @@ public record InspectionResponse(
         return "raw".equals(imageType)
                 ? inspection.getRawImageUrl()
                 : inspection.getResultImageUrl();
+    }
+
+    private static BigDecimal representativeConfidence(Inspection inspection) {
+        return inspection.getDefects().stream()
+                .map(InspectionDefect::getConfidence)
+                .filter(confidence -> confidence != null)
+                .max(Comparator.naturalOrder())
+                .orElse(null);
     }
 }

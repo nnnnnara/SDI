@@ -23,6 +23,7 @@ export function inspectionResultClass(result?: InspectionResponse['result'] | nu
 }
 
 export function confidenceClass(confidence?: number | null) {
+  if (confidence === undefined || confidence === null) return 'text-brand-textSub';
   const percent = Number(confidence ?? 0) * 100;
   if (percent < 70) return 'text-brand-danger';
   if (percent < 85) return 'text-brand-warning';
@@ -30,6 +31,7 @@ export function confidenceClass(confidence?: number | null) {
 }
 
 export function confidenceLevelLabel(confidence?: number | null) {
+  if (confidence === undefined || confidence === null) return '-';
   const percent = Number(confidence ?? 0) * 100;
   if (percent < 70) return '낮음';
   if (percent < 85) return '주의';

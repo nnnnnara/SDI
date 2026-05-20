@@ -23,8 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +63,7 @@ public class InspectionMqttService {
         Inspection inspection = Inspection.builder()
                 .product(product)
                 .result(message.result())
-                .confidence(message.confidence())
+                .confidence(null)
                 .rawImageUrl(rawImage == null ? message.rawImageUrl() : null)
                 .resultImageUrl(resultImage == null ? message.resultImageUrl() : null)
                 .rawImageData(rawImage == null ? null : rawImage.data())
@@ -79,6 +81,7 @@ public class InspectionMqttService {
                 InspectionDefect defect = InspectionDefect.builder()
                         .inspection(savedInspection)
                         .defectType(defectMessage.defectType())
+                        .confidence(defectMessage.confidence())
                         .bboxX(defectMessage.bboxX())
                         .bboxY(defectMessage.bboxY())
                         .bboxW(defectMessage.bboxW())
@@ -115,7 +118,7 @@ public class InspectionMqttService {
         data.put("runId", processRun.getId());
         data.put("serialNo", message.serialNo());
         data.put("result", message.result().name());
-        data.put("confidence", message.confidence());
+        data.put("confidence", representativeConfidence(message.defects()));
         data.put("defectCount", defectCount);
         data.put("message", inspectionMessage(message.result()));
 
@@ -144,6 +147,18 @@ public class InspectionMqttService {
         return result == InspectionResult.BAD
                 ? "\ubd88\ub7c9\uc774 \uac10\uc9c0\ub418\uc5c8\uc2b5\ub2c8\ub2e4."
                 : "\uac80\uc0ac\uac00 \uc644\ub8cc\ub418\uc5c8\uc2b5\ub2c8\ub2e4.";
+    }
+
+    private static BigDecimal representativeConfidence(List<DefectMessage> defects) {
+        if (defects == null || defects.isEmpty()) {
+            return null;
+        }
+
+        return defects.stream()
+                .map(DefectMessage::confidence)
+                .filter(confidence -> confidence != null)
+                .max(Comparator.naturalOrder())
+                .orElse(null);
     }
 
     private static String firstPresent(String preferred, String fallback) {

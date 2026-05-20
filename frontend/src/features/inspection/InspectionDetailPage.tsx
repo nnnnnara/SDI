@@ -125,10 +125,7 @@ export function InspectionDetailPage() {
                 <tr>
                   <th className="px-5 py-3 font-medium">결함 ID</th>
                   <th className="px-5 py-3 font-medium">결함 유형</th>
-                  <th className="px-5 py-3 font-medium">영역 X</th>
-                  <th className="px-5 py-3 font-medium">영역 Y</th>
-                  <th className="px-5 py-3 font-medium">너비</th>
-                  <th className="px-5 py-3 font-medium">높이</th>
+                  <th className="px-5 py-3 font-medium">신뢰도</th>
                 </tr>
               </thead>
               <tbody>
@@ -140,15 +137,12 @@ export function InspectionDetailPage() {
                         {defectTypeLabel(defect.defectType)}
                       </span>
                     </td>
-                    <td className="px-5 py-3 text-brand-textSub">{defect.bboxX}</td>
-                    <td className="px-5 py-3 text-brand-textSub">{defect.bboxY}</td>
-                    <td className="px-5 py-3 text-brand-textSub">{defect.bboxW}</td>
-                    <td className="px-5 py-3 text-brand-textSub">{defect.bboxH}</td>
+                    <td className={`px-5 py-3 font-semibold ${confidenceClass(defect.confidence)}`}>{formatPercent(defect.confidence)}</td>
                   </tr>
                 ))}
                 {(!inspection || inspection.defects.length === 0) && (
                   <tr>
-                    <td className="px-5 py-8 text-center text-brand-textSub" colSpan={6}>
+                    <td className="px-5 py-8 text-center text-brand-textSub" colSpan={3}>
                       탐지된 결함이 없습니다.
                     </td>
                   </tr>

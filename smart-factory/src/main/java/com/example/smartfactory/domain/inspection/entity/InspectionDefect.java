@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Getter
 @Entity
 @Table(name = "inspection_defects")
@@ -23,16 +25,19 @@ public class InspectionDefect extends BaseEntity {
     @Column(name = "defect_type", nullable = false, length = 20)
     private DefectType defectType;
 
-    @Column(name = "bbox_x", nullable = false)
+    @Column(name = "confidence", precision = 5, scale = 4)
+    private BigDecimal confidence;
+
+    @Column(name = "bbox_x")
     private Integer bboxX;
 
-    @Column(name = "bbox_y", nullable = false)
+    @Column(name = "bbox_y")
     private Integer bboxY;
 
-    @Column(name = "bbox_w", nullable = false)
+    @Column(name = "bbox_w")
     private Integer bboxW;
 
-    @Column(name = "bbox_h", nullable = false)
+    @Column(name = "bbox_h")
     private Integer bboxH;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -43,6 +48,7 @@ public class InspectionDefect extends BaseEntity {
     public InspectionDefect(
             Inspection inspection,
             DefectType defectType,
+            BigDecimal confidence,
             Integer bboxX,
             Integer bboxY,
             Integer bboxW,
@@ -50,6 +56,7 @@ public class InspectionDefect extends BaseEntity {
     ) {
         this.inspection = inspection;
         this.defectType = defectType;
+        this.confidence = confidence;
         this.bboxX = bboxX;
         this.bboxY = bboxY;
         this.bboxW = bboxW;

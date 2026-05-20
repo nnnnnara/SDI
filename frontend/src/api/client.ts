@@ -71,17 +71,18 @@ export interface ControlCommandResponse {
 export interface InspectionDefectResponse {
   defectId: number;
   defectType: string;
-  bboxX: number;
-  bboxY: number;
-  bboxW: number;
-  bboxH: number;
+  confidence?: number | null;
+  bboxX?: number | null;
+  bboxY?: number | null;
+  bboxW?: number | null;
+  bboxH?: number | null;
 }
 
 export interface InspectionResponse {
   inspectionId: number;
   serialNo: string;
   result: 'GOOD' | 'BAD';
-  confidence: number;
+  confidence?: number | null;
   rawImageUrl: string;
   resultImageUrl: string;
   inspectedAt: string;
