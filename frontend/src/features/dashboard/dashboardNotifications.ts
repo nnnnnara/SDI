@@ -8,6 +8,7 @@ export interface RealtimeNotificationInput {
 }
 
 export const DASHBOARD_NOTIFICATION_EVENT = 'dashboard-realtime-notification';
+export const DASHBOARD_DATA_REFRESH_EVENT = 'dashboard-data-refresh';
 
 export function dispatchDashboardNotification(notification: RealtimeNotificationInput) {
   window.dispatchEvent(
@@ -15,4 +16,8 @@ export function dispatchDashboardNotification(notification: RealtimeNotification
       detail: notification,
     })
   );
+}
+
+export function dispatchDashboardDataRefresh() {
+  window.dispatchEvent(new Event(DASHBOARD_DATA_REFRESH_EVENT));
 }
