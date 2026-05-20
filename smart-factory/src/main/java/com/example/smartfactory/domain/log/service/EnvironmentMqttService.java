@@ -55,7 +55,7 @@ public class EnvironmentMqttService {
                 || isOver(message.pm10(), MAX_PM10)) {
             systemLogCommandService.warn(
                     "ENVIRONMENT",
-                    "Environment threshold exceeded: temperature=%s, humidity=%s, pm25=%s, pm10=%s"
+                    "환경 기준치 초과: 온도=%s, 습도=%s, PM2.5=%s, PM10=%s"
                             .formatted(message.temperature(), message.humidity(), message.pm25(), message.pm10()),
                     message.runId()
             );

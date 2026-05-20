@@ -65,19 +65,19 @@ public class StatusMqttService {
         if (message.status() == ProcessStatus.ERROR) {
             systemLogCommandService.error(
                     "PROCESS",
-                    "Process status changed to ERROR: runId=%d".formatted(message.runId()),
+                    "공정 오류 발생: runId=%d".formatted(message.runId()),
                     message.runId()
             );
         } else if (message.status() == ProcessStatus.COMPLETED) {
             systemLogCommandService.info(
                     "PROCESS",
-                    "Process completed: runId=%d".formatted(message.runId()),
+                    "공정 완료: runId=%d".formatted(message.runId()),
                     message.runId()
             );
         } else if (message.status() == ProcessStatus.STOPPED) {
             systemLogCommandService.info(
                     "PROCESS",
-                    "Process stopped by user: runId=%d".formatted(message.runId()),
+                    "사용자 요청으로 공정 중지: runId=%d".formatted(message.runId()),
                     message.runId()
             );
         }

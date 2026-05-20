@@ -50,7 +50,7 @@ public class MqttInboundHandler {
                     log.warn("Unhandled MQTT topic. topic={}, payload={}", topic, payload);
                     systemLogCommandService.warn(
                             "MQTT",
-                            "Unhandled MQTT topic received: topic=%s".formatted(topic),
+                            "처리되지 않은 MQTT 토픽 수신: topic=%s".formatted(topic),
                             null
                     );
                 }
@@ -65,7 +65,7 @@ public class MqttInboundHandler {
         try {
             systemLogCommandService.error(
                     "MQTT",
-                    "Failed to process MQTT message: topic=%s, reason=%s".formatted(topic, e.getMessage()),
+                    "MQTT 메시지 처리 실패: topic=%s, 사유=%s".formatted(topic, e.getMessage()),
                     null
             );
         } catch (Exception logException) {

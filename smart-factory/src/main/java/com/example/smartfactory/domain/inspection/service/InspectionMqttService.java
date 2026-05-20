@@ -95,7 +95,7 @@ public class InspectionMqttService {
         if (message.result() == InspectionResult.BAD) {
             systemLogCommandService.warn(
                     "INSPECTION",
-                    "Bad inspection result: serialNo=%s, defectCount=%d".formatted(message.serialNo(), defects.size()),
+                    "불량 검사 결과 감지: S/N=%s, 결함 수=%d".formatted(message.serialNo(), defects.size()),
                     message.runId()
             );
         }
