@@ -1,0 +1,87 @@
+services:
+  postgres:
+    image: postgres:15.17
+    container_name: smart-factory-postgres
+    environment:
+      POSTGRES_DB: smart_factory
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  mqtt:
+    build:
+      context: ./mosquitto
+    container_name: smart-factory-mqtt
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+    container_name: smart-factory-frontend
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./smart-factory
+    container_name: smart-factory-server
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      TZ: Asia/Seoul
+      JAVA_TOOL_OPTIONS: -Duser.timezone=Asia/Seoul
+    depends_on:
+      - postgres
+      - mqtt
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: smart-factory-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  nginx:
+    build:
+      context: ./nginx
+    container_name: smart-factory-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - certbot-www:/var/www/certbot
+      - certbot-etc:/etc/letsencrypt
+    depends_on:
+      - backend
+      - grafana
+      - frontend
+    restart: unless-stopped
+
+  certbot:
+    image: certbot/certbot
+    container_name: smart-factory-certbot
+    volumes:
+      - certbot-www:/var/www/certbot
+      - certbot-etc:/etc/letsencrypt
+
+volumes:
+  postgres-data:
+  grafana_data:
+  certbot-www:
+  certbot-etc:

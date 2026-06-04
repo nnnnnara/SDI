@@ -1,0 +1,52 @@
+services:
+  postgres:
+    image: postgres:15.17
+    container_name: smart-factory-postgres
+    environment:
+      POSTGRES_DB: smart_factory
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  mqtt:
+    image: eclipse-mosquitto:2.0
+    container_name: smart-factory-mqtt
+    restart: unless-stopped
+    ports:
+      - "1884:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+
+  mqtt-ui:
+    image: emqx/mqttx-web
+    container_name: smart-factory-mqtt-ui
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    depends_on:
+      - mqtt
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  grafana_data:
